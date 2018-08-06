@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>部门设定</title>
+    <link href="../../../cij/css/main.css" rel="stylesheet" />
+    <!--EasyUI 1.5.2-->
+    <link href="/Content/easyui/themes/default/easyui.css" rel="stylesheet" id="easyuiTheme" />
+    <!-- Font Awesome 4.7.0 -->
+    <link href="/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div style="float:left;">
+        <table id="tb_dept"></table>
+        <div id="toolbar">
+            <a class="easyui-linkbutton" iconcls="fa fa-plus" plain="true" id="btnInsert"
+               onclick="btnInsert_Click()">新增</a>
+            <a class="easyui-linkbutton" iconcls="fa fa-edit" plain="true" id="btnEdit"
+               onclick="btnEdit_Click()">修改</a>
+            <a class="easyui-linkbutton" iconcls="fa fa-remove" plain="true" id="btnDelete"
+               onclick="btnDelete_Click()">删除</a>
+        </div>
+    </div>
+    <div style="float:left;">
+        <table id="tb_user"></table>
+        <div id="toolbar_user">
+            <a class="easyui-linkbutton" iconcls="fa fa-remove" plain="true" id="btnDelete"
+               onclick="btnDelete_Click()">删除</a>
+        </div>
+    </div>
+    <!-- jQuery 2.2.3 -->
+    <script src="/Content/jquery/jquery.min.js"></script>
+    <!--EasyUI 1.5.2-->
+    <script src="/Content/easyui/js/jquery.easyui.min.js"></script>
+    <script src="/Content/easyui/js/easyui-lang-zh_CN.js"></script>
+    <!--layer弹出层-->
+    <script src="../../../cij/js/msg.tool.js"></script>
+    <!--权限按钮-->
+    <script src="../../../cij/js/permission.js"></script>
+    <script type="text/javascript">
+
+        $(function () {
+            $("#panel_query").panel({ width: $(window).width() - 400 });
+
+            $("#tb_dept").treegrid({
+                method: 'POST',
+                url: '/route/admin/SysDept/GetList',
+                width: $(window).width() - 400,
+                height: ($(window).height() - 10),
+                //fitColumns: true,
+                title: '部门维护',
+                iconCls: 'fa fa-home',
+                treeField: 'DEPT_NAME',
+                idField: 'DEPT_CODE',
+                //striped: true,
+                //rownumbers: true,
+                //singleSelect: true,
+                columns: [[
+                    { field: 'DEPT_NAME', title: '部门名称', width: 250, align: 'left' },
+                    { field: 'DEPT_CODE', title: '部门代码', width: 100, align: 'left' },
+                    { field: 'PARENT_CODE', title: '上级部门代码', width: 100 },
+                    { field: 'SITE_CODE', title: '厂别代码', width: 100 },
+                    { field: 'SITE_NAME', title: '厂别名称', width: 100, },
+                    { field: 'DEPT_SORT', title: '排序', width: 50 },
+                    { field: 'DEPT_TYPE', title: '类别', width: 50, hidden: true },
+                    {
+                        field: 'IS_ABLE', title: '是否启用', width: 60, align: 'center',
+                        formatter: function (value) {
+                            return value ? '<i class="fa fa-check-square-o" aria-hidden="true"></i>' : '<i class="fa fa-square-o" aria-hidden="true" ></i>';
+                        }
+                    },
+                    {
+                        field: 'IS_END', title: '是否最后一项', width: 80, align: 'center',
+                        formatter: function (value) {
+                            return value ? '<i class="fa fa-check-square-o" aria-hidden="true"></i>' : '<i class="fa fa-square-o" aria-hidden="true" ></i>';
+                        }
+                    },
+                    { field: 'DEPT_DESC', title: '描述', width: 140 },
+                    { field: 'CREATE_TIME', title: '创建时间', width: 130, hidden: true },
+                    { field: 'CREATE_USER', title: '创建人员', width: 70, }
+                ]],
+                onClickRow: function (rowData) {
+                    var parms = {};
+                    parms.dept_code = rowData.DEPT_CODE;
+                    $('#tb_user').datagrid('reload', parms);
+
+                },
+                onBeforeExpand: function (row) {
+                    if (row.DEPT_CODE == "0000000000") {//去除顶级菜单，防止报错
+                        return false;
+                    }
+                },
+                toolbar: '#toolbar'
+
+            })
+
+            $("#tb_user").datagrid({
+                method: 'POST',
+                url: '/route/admin/SysUser/GetByDeptCode',
+                height: ($(window).height() - 10),
+                width: 370,
+                title: '部门对应的人员',
+                iconCls: 'fa fa-user',
+                //height: $("#div_content").height(),
+                //border: true, //当true时，显示该datagrid面板的边框。
+                //striped: true,//当true时，单元格显示条纹。默认false。
+                //fit: true,//当true时，设置大小以适应它的父容器。默认false。
+                rownumbers: true,//当true时显示行号。默认false。
+                singleSelect: true,//当true时只允许当前选择一行。默认false。
+                pagination: false,
+                pageSize: 20,
+                sortName: 'USER_CODE',
+                sortOrder: 'desc',
+                pageList: [20, 40, 60, 80, 100],
+                columns: [[
+                    //{ field: 'ck', checkbox: true },
+                    { field: 'USER_CODE', title: '用户账号', width: 120, align: 'left' },
+                    { field: 'USER_NAME', title: '用户名称', width: 120, align: 'left', },
+                    {
+                        field: 'IS_ABLED', title: '启用', sortable: true, width: 60, align: 'center',
+                        formatter: function (value, row, index) {
+                            return value ? '<i class="fa fa-check-square-o" aria-hidden="true"></i>' : '<i class="fa fa-square-o" aria-hidden="true" ></i>';
+                        }
+                    }
+                ]],
+                toolbar: '#toolbar_user'
+            });
+
+        });
+
+        function btnInsert_Click() {
+            var row = $('#tb_dept').treegrid('getSelected');
+            var data = $('#tb_dept').treegrid('getData');
+            if (data.length > 0) {
+                if (row == null) {
+                    cMsg.alert_f("请选择要添加的父节点"); //请选择要添加的父节点
+                    return;
+                }
+                if (row.ISEND == true) {
+                    cMsg.alert_f("这个节点是最后一项，不允许添加子节点"); //这个节点是最后一项，不允许添加子节点
+                    return;
+                }
+            }
+
+            $("<div/>").dialog({
+                id: "dept_insert",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "insert.html",
+                title: "添加部门",
+                height: 400,
+                width: 380,
+                modal: true,
+                iconCls: 'fa fa-plus',
+                closable: true,
+                onLoad: function () {
+                    if (data.length > 0) {
+                        $("#txtSubParentCode").val(row.DEPT_CODE);
+                    } else {
+                        $("#txtSubParentCode").val("0000000000");
+                    }
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                },
+                onOpen: function () {
+
+                }
+            });
+        }
+
+        function btnDelete_Click() {
+            var rows = $('#tb_dept').treegrid('getSelected');
+            if (rows == null) {
+                cMsg.alert_f("请选择要删除的行"); //请选择要删除的行
+                return;
+            }
+            if (rows.DEPTID == "0000000000") {
+                cMsg.alert_f("顶级菜单，不能删除"); //顶级菜单，不能删除
+                return;
+            }
+
+            var parms = {};
+            parms.dept_code = rows.DEPT_CODE;                         //您确定要删除该部门？
+            cMsg.confirm("您确定要删除该部门？", function (r) {
+                if (r) {
+                    $.post("/route/admin/SysDept/Delete", parms, function (data) {
+                        if (data.type == 1) {
+                            cMsg.show(data.message);
+                            $("#tb_dept").treegrid('reload');
+                        } else {
+                            cMsg.alert_f(data.message);
+                        }
+                    }, "json")
+                }
+            })
+
+        }
+
+        function btnEdit_Click() {
+            var rows = $("#tb_dept").treegrid('getSelected');
+            if (rows == null) {
+                cMsg.alert_f("请选择要修改的行"); //请选择要修改的行
+                return;
+            }
+
+            $("<div/>").dialog({
+                id: "dept_edit",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "edit.html",
+                title: "修改部门",
+                height: 400,
+                width: 380,
+                modal: true,
+                iconCls: 'fa fa-edit',
+                closable: true,
+                onLoad: function () {
+
+                    $("#txtSubParentCode").val(rows.PARENT_CODE);
+                    $("#txtSubDeptCode").val(rows.DEPT_CODE);
+                    $("#txtSubDeptName").val(rows.DEPT_NAME);
+                    $('#txtSubSite').combobox('setValue', rows.COMPANYID);
+                    $("#txtSubDeptSort").val(rows.DEPT_SORT);
+                    $("#txtSubDeptType").val(rows.DEPT_TYPE);
+                    $("#txtSubDeptDesc").val(rows.DEPT_DESC);
+
+                    if (rows.IS_ABLE)
+                        $("#cbIsAble").attr("checked", "true");
+                    else
+                        $("#cbIsAble").removeAttr("checked");
+                    if (rows.IS_END)
+                        $("#cbIsEnd").attr("checked", "true");
+                    else
+                        $("#cbIsEnd").removeAttr("checked");
+
+                    $("#txtSubDeptName").focus();    //聚焦密码框
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+
+
+        //窗口大小改变时，重新设定div大小
+        $(window).resize(function () {
+            //其中bind时间两行代码，是用来防止重复执行。
+            $(window).unbind("onresize");
+            $("#panel_query").panel({ width: $(window).width() - 400 });
+            $('#tb_dept').datagrid('resize', {
+                width: $(window).width() - 400,
+                height: $(window).height() - 10
+            });
+            $('#tb_user').datagrid('resize', {
+                width: 370,
+                height: $(window).height() - 10
+            });
+            $(window).bind("onresize", this);
+
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,145 @@
+﻿
+<div class="dialog">
+
+    <table class="tablem">
+        <tr>
+            <th>
+                帮助连接：
+            </th>
+            <td>
+                <input type="text" id="txtSubHelpLink" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                异常信息：
+            </th>
+            <td>
+                <input type="text" id="txtSubMessage" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                异常来源：
+            </th>
+            <td>
+                <input type="text" id="txtSubSource" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                堆栈：
+            </th>
+            <td>
+                <textarea id="txtSubStack" readonly="readonly" class="form-control" style="width:180px;height:100px;" ></textarea>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                目标页：
+            </th>
+            <td>
+                <input type="text" id="txtSubTarget" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                程序集：
+            </th>
+            <td>
+                <input type="text" id="txtSubData" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                命名空间：
+            </th>
+            <td>
+                <input type="text" id="txtSubNamespace" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                类名：
+            </th>
+            <td>
+                <input type="text" id="txtSubClass" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                方法：
+            </th>
+            <td>
+                <input type="text" id="txtSubMethod" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                操作人员：
+            </th>
+            <td>
+                <input type="text" id="txtSubUserName" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                操作类型：
+            </th>
+            <td>
+                <input type="text" id="txtSubType" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                发生日期：
+            </th>
+            <td>
+                <input type="text" id="txtSubDate" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                说明-备注：
+            </th>
+            <td>
+                <textarea id="txtSubDesc" rows="5" readonly="readonly" class="form-control" ></textarea>
+            </td>
+        </tr>
+    </table>
+
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true"
+           onclick="btnCancel_Click()">返回</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+    function init() {
+        var parms = {};
+        parms.exId = $("#hdSubExId").val();
+
+        $.post('/route/admin/SysException/GetById', parms, function (data) {
+            $("#txtSubHelpLink").val(data.EX_HELPLINK);
+            $("#txtSubMessage").val(data.EX_MESSAGE);
+            $("#txtSubSource").val(data.EX_SOURCE);
+            $("#txtSubStack").val(data.EX_STACK);
+            $("#txtSubTarget").val(data.EX_TARGET);
+            $("#txtSubData").val(data.EX_DATA);
+            $("#txtSubNamespace").val(data.EX_NAMESPACE);
+            $("#txtSubClass").val(data.EX_CLASS);
+            $("#txtSubMethod").val(data.EX_METHOD);
+            $("#txtSubUserName").val(data.CREATE_USER);
+            $("#txtSubType").val(data.EX_TYPE);
+            $("#txtSubDate").val(data.CREATE_TIME);
+            $("#txtSubDesc").val(data.EX_DESC);
+        }, 'json');
+    }
+
+    init();
+
+    function btnCancel_Click() {
+        $('#exception_detail').dialog('close');
+    }
+    $(".footer").width($(".footer").width() - 12);
+</script>

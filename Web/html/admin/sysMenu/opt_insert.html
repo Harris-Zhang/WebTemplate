@@ -1,0 +1,100 @@
+﻿
+<div class="dialog">
+    <table class="tablem">
+        <tr>
+            <th>
+                <span>菜单ID</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubMenuId" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>菜单名称</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubMenuName" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>操作码</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubKeyCode" class="easyui-validatebox form-control" data-options="required:true" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>操作码名称</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubMoName" class="easyui-validatebox form-control" data-options="required:true" />
+            </td>
+        </tr> 
+ 
+        <tr>
+            <th>
+                <span>是否验证</span>
+            </th>
+            <td>
+                <div class="checkbox checkbox-info">
+                    <input type="checkbox" id="cbIsValid" class="styled" checked />
+                    <label for="cbIsValid">
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>描述</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubMoDesc" class="easyui-validatebox form-control" />
+            </td>
+        </tr>
+    </table>
+
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-plus" plain="true" onclick="btnSubAdd_Click()">添加</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true" onclick="btnCancel_Click()">取消</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+
+    function btnSubAdd_Click() {
+        var parms = {};
+        parms.name = $("#txtSubMoName").val();
+        parms.menuId = $("#txtSubMenuId").val();
+        parms.keyCode = $("#txtSubKeyCode").val();
+        parms.isValid = $("#cbIsValid")[0].checked; 
+        parms.desc = $("#txtSubMoDesc").val();
+
+        if (parms.name == "") {
+            cMsg.alert_f("菜单名称不能为空");//菜单名称不能为空
+            return;
+        }
+        if (parms.keyCode == "") {
+            cMsg.alert_f("编码名称不能为空");//编码名称不能为空
+            return;
+        }
+
+        $.post('/route/admin/SysMenu/InsertOpt', parms, function (data) {
+           
+            if (data.type == 1) {
+                $("#tb_OpList").datagrid('reload');
+                //$('#menu_opt_insert').dialog('close');
+                cMsg.show(data.message);
+            } else {
+                cMsg.alert_f(data.message);
+            }
+        }, 'json');
+
+    }
+    function btnCancel_Click() {
+        $('#menu_opt_insert').dialog('close');
+    }
+    $(".footer").width($(".footer").width() - 12);
+</script>

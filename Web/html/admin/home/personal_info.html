@@ -1,0 +1,108 @@
+﻿
+<div class="dialog">
+    <div style="width:49%;float:left">
+        <div id="panel_baseinfo" class="easyui-panel" data-options="title: '基本信息', iconCls: 'icon-user',lang: 'true', langKey: 'panel_title_selectarea'">
+            <table class="tablem">
+                <tr>
+                    <th style="width:80px;">
+                        用户账号
+                    </th>
+                    <td>
+                        <label id="lblUserId">admin</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        用户姓名
+                    </th>
+                    <td>
+                        <label id="lblUserName">admin</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>
+                        邮箱
+                    </th>
+                    <td>
+                        <label id="lblUserMail">admin</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        手机号
+                    </th>
+                    <td>
+                        <label id="lblUserTel">admin</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        性别
+                    </th>
+                    <td>
+                        <label id="lblUserSex">admin</label>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div style="width:50.8%;float:left;">
+        <table id="tb_list"></table>
+    </div>
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true"
+           onclick="btnCancel_Click()">Close</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+
+    $(function () {
+
+        $.post("/route/admin/Home/GetUser", {}, function (data) {
+ 
+            $("#lblUserId").text(data.USER_CODE);
+            $("#lblUserName").text(data.USER_NAME);
+            $("#lblUserMail").text(data.USER_EMAIL);
+            $("#lblUserTel").text(data.USER_TEL);
+            $("#lblUserSex").text(data.USER_SEX ? "男" : "女");
+        });
+  
+        $("#tb_list").treegrid({
+            method: 'POST',
+            //queryParams: { userId: $.session.get('user_name') },
+            url: '/route/admin/Home/GetUserMenuList',
+            width: $(".footer").width() / 2,
+            height: 415,
+            //fitColumns: true,
+            title: '拥有的权限', 
+            iconCls: 'fa fa-navicon',
+            treeField: 'MENU_NAME',
+            idField: 'MENU_ID',
+            //striped: true,
+            //rownumbers: true,
+            //singleSelect: true,
+            columns: [[
+                { field: 'MENU_ID', title: '唯一标示符', width: 100, hidden: true },
+                { field: 'MENU_NAME', title: '菜单名称', width: 250, align: 'left' },
+            ]],
+            onLoadSuccess: function (row, data) {
+                //$('#tb_list').treegrid('expandAll');
+            },
+            onBeforeExpand: function (row) {
+                if (row.MENUID == 0) {//去除顶级菜单，防止报错
+                    return false;
+                }
+            }
+        })
+    })
+
+    function btnCancel_Click() {
+        $('#personal_info').dialog('close');
+    }
+    $("#panel_baseinfo").panel({ width: $(".footer").width() / 2 - 15 });
+    $(".dialog-button.footer").width($(".dialog-button.footer").width() - 12);
+
+</script>

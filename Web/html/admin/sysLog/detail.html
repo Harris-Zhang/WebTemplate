@@ -1,0 +1,89 @@
+﻿
+
+<div class="dialog">
+    <table class="tablem">
+        <tr>
+            <th>
+                操作人员：
+            </th>
+            <td>
+                <input type="text" id="txtSubUserName" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                操作结果：
+            </th>
+            <td>
+                <input type="text" id="txtSubResult" class="form-control"  readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                记录类别：
+            </th>
+            <td>
+                <input type="text" id="txtSubLogType" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                记录模块：
+            </th>
+            <td>
+                <input type="text" id="txtSubLogModule" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                记录日期：
+            </th>
+            <td>
+                <input type="text" id="txtSubDate" class="form-control" readonly="readonly" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                操作信息：
+            </th>
+            <td>
+                <textarea id="txtSubMessage" class="form-control" readonly="readonly"></textarea>
+                 
+            </td>
+        </tr>
+        <tr>
+            <th>
+                说明-备注：
+            </th>
+            <td>
+                <textarea id="txtSubLogDesc" class="form-control" readonly="readonly"></textarea>
+            </td>
+        </tr>
+
+    </table>
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true"
+           onclick="btnCancel_Click()">返回</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+    $(function () {
+        var parms = {};
+        parms.logId = $("#hdSubLogId").val();
+        $.post('/route/admin/SysLog/GetById', parms, function (data) {
+            $("#txtSubUserName").val(data.OPERATE_ID);
+            $("#txtSubResult").val(data.LOG_RESULT);
+            $("#txtSubLogType").val(data.LOG_TYPE);
+            $("#txtSubLogModule").val(data.LOG_MODULE);
+            $("#txtSubDate").val(data.CREATE_TIME);
+            $("#txtSubMessage").val(data.LOG_MSG);
+            $("#txtSubLogDesc").val(data.LOG_DESC);
+        }, 'json');
+    })
+
+    function btnCancel_Click() {
+        $('#log_detail').dialog('close');
+    }
+    $(".footer").width($(".footer").width() - 12);
+</script>

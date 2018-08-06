@@ -1,0 +1,160 @@
+﻿
+
+<div class="dialog">
+    <table class="tablem">
+        <tr>
+            <th>
+                <span>用户账号</span> 
+            </th>
+            <td>
+                <input type="text" id="txtSubUserId" class="form-control"  disabled="disabled" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>姓名</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubUserName" class="form-control easyui-validatebox" data-options="required:true" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>邮箱</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubMail" class="form-control" />
+            </td>
+        </tr>
+        
+        <tr>
+            <th>
+                <span>手机/电话</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubTel" class="form-control" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>性别</span>
+            </th>
+            <td> 
+                <label>
+                    <input type="radio" id="rdSubSexMan" name="rdSubSex" checked /> 男
+                </label>
+                <label>
+                    <input type="radio" id="rdSubSexWan" name="rdSubSex" />女
+                </label> 
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>职位/头衔</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubPost" class="form-control" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>重置密码</span>
+            </th>
+            <td>
+                <div class="checkbox checkbox-info">
+                    <input type="checkbox" id="cbResetPwd" class="styled" />
+                    <label for="cbResetPwd">
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>重置二维码</span>
+            </th>
+            <td>
+                <div class="checkbox checkbox-info">
+                    <input type="checkbox" id="cbQRCode" class="styled" />
+                    <label for="cbQRCode">
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>是否启用</span> 
+            </th>
+            <td>
+                <div class="checkbox checkbox-info">
+                    <input type="checkbox" id="cbIsAble" class="styled" checked />
+                    <label for="cbIsAble">
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>是否改密</span>
+            </th>
+            <td>
+                <div class="checkbox checkbox-info">
+                    <input type="checkbox" id="cbIsChangePwd" class="styled" />
+                    <label for="cbIsChangePwd">
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>描述说明</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubDesc" class="form-control" />
+            </td>
+        </tr>
+
+    </table>
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-edit" plain="true" onclick="btnSubEdit_Click()">修改</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true" onclick="btnCancel_Click()">取消</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+ 
+    function btnSubEdit_Click() {
+        var parms = {}; 
+        parms.userId = $("#txtSubUserId").val();
+        parms.userName = $("#txtSubUserName").val();
+        parms.e_mail = $("#txtSubMail").val();
+        parms.tel = $("#txtSubTel").val();
+        parms.sex = $("#rdSubSexMan")[0].checked ? true : false;
+        parms.post = $("#txtSubPost").val();
+        parms.resetPwd = $("#cbResetPwd")[0].checked;
+        parms.qrCode = $("#cbQRCode")[0].checked;
+        parms.isAble = $("#cbIsAble")[0].checked;
+        parms.isChangePwd = $("#cbIsChangePwd")[0].checked;
+        parms.desc = $("#txtSubDesc").val();
+
+        if (parms.userName == "") {
+            cMsg.alert_f("用户名称不能为空"); //用户名称不能为空
+            return;
+        }
+
+        $.post('/route/admin/SysUser/Edit', parms, function (data) {
+            
+            if (data.type == 1) {
+                $("#tb_list").datagrid('reload');
+                $('#user_edit').dialog('close');
+                cMsg.show(data.message);
+            } else {
+                cMsg.alert_f(data.message);
+            }
+        }, 'json');
+
+    }
+    function btnCancel_Click() {
+        $('#user_edit').dialog('close');
+    }
+    $(".footer").width($(".footer").width() - 12);
+</script>

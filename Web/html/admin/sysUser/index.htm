@@ -1,0 +1,300 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>用户管理</title>
+    <link href="../../../cij/css/main.css" rel="stylesheet" />
+    <!--EasyUI 1.5.2-->
+    <link href="/Content/easyui/themes/default/easyui.css" rel="stylesheet" id="easyuiTheme" />
+    <!-- Font Awesome 4.7.0 -->
+    <link href="/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div id="panel_query" class="easyui-panel" data-options="title: '查询区域', iconCls: 'fa fa-search'">
+        <table class="queryTable">
+            <tr>
+                <th><span>用户账号</span></th>
+                <td>
+                    <input type="text" id="txtUserID" class="form-control" />
+                </td>
+                <th><span>姓名</span></th>
+                <td>
+                    <input type="text" id="txtUserName" class="form-control" />
+                </td>
+                <!--<th>角色</th>
+                <td>
+                    <input type="text" id="txtRole" class="easyui-combobox" />
+                </td>-->
+                <td>
+                    <!--<button type="button" class="btn btn-default" onclick="btnQuery_Click();"><span class="fa fa-search"></span>查询</button>-->
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-search" plain="true" lang='true' langkey='btn_query'
+                       onclick="btnQuery_Click()">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="panel_result" class="easyui-panel" data-options="title: '结果区域', iconCls: 'fa fa-database' ">
+        <table id="tb_list"></table>
+        <div id="toolbar">
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-plus" plain="true" id="btnInsert"
+               onclick="btnInsert_Click()">新增</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-remove" plain="true" id="btnDelete"
+               onclick="btnDelete_Click()">删除</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-edit" plain="true" id="btnEdit"
+               onclick="btnEdit_Click()">修改</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-users" plain="true" id="btnAllotUser"
+               onclick="btnAllotRole_Click()">分配角色</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-delicious" plain="true" id="btnAllotUser"
+               onclick="btnSetDept_Click()">设定部门</a>
+        </div>
+    </div>
+    <input type="hidden" id="hdSubUserId" />
+
+    <!-- jQuery 2.2.3 -->
+    <script src="/Content/jquery/jquery.min.js"></script>
+    <!--EasyUI 1.5.2-->
+    <script src="/Content/easyui/js/jquery.easyui.min.js"></script>
+    <script src="/Content/easyui/js/easyui-lang-zh_CN.js"></script>
+    <!--layer弹出层--> 
+    <script src="../../../cij/js/msg.tool.js"></script>
+    <!--权限按钮-->
+    <script src="../../../cij/js/permission.js"></script> 
+
+    <script type="text/javascript">
+        $(function () {
+            $("#panel_query").panel({ width: $(window).width() - 5 });
+            $("#panel_result").panel({ width: $(window).width() - 5 });
+
+            //加载主表格
+            $("#tb_list").datagrid({
+                method: 'POST',
+                url: '/route/admin/SysUser/GetList',
+                height: ($(window).height() - 120),
+                width: $(window).width() - 7,
+                striped: true,
+                rownumbers: true,
+                remotesort: true,
+                singleSelect: true,
+                pagination: true,
+                pageSize: 100,
+                sortName: 'USER_CODE',
+                sortOrder: 'desc',
+                pageList: [100, 200, 300, 400],
+                frozenColumns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'USER_CODE', title: '登录名', width: 120, sortable: true },
+                    { field: 'USER_NAME', title: '姓名', width: 100, sortable: true }
+                ]],
+                columns: [[
+                    {
+                        field: 'IS_ABLED', title: '启用', width: 60, align: 'center',
+                        formatter: function (value, row, index) {
+                            return value ? '<i class="fa fa-check-square-o" aria-hidden="true"></i>' : '<i class="fa fa-square-o" aria-hidden="true" ></i>';
+                        }
+                    },
+                    {
+                        field: 'IS_C_PWD', title: '改密', width: 60, align: 'center',
+                        formatter: function (value, row, index) {
+                            return value ? '<i class="fa fa-check-square-o" aria-hidden="true" ></i>' : '<i class="fa fa-square-o" aria-hidden="true" ></i>';
+                        }
+                    },
+                    //{
+                    //    field: "OPT", title: "操作", width: 110, align: 'center', formatter: function (value, row, index) {
+                    //        return [
+                    //                 '<button type="button" class="btn btn-default btn-sm btn-cust" data-toggle="tooltip" data-placement="top" title="编辑"><span class="fa fa-edit"></span></button>',
+                    //                 '<img src="../../../images/split_h.png" class="split_h" />',
+                    //                 '<button type="button" class="btn btn-default btn-sm btn-cust" data-toggle="tooltip" data-placement="top" title="分配角色"><span class="fa fa-users"></span></button>',
+                    //                 '<img src="../../../images/split_h.png" class="split_h" />',
+                    //                 '<button type="button" class="btn btn-default btn-sm btn-cust" data-toggle="tooltip" data-placement="top" title="设定部门"><span class="fa fa-delicious"></span></button>',
+                    //                 '<img src="../../../images/split_h.png" class="split_h" />',
+                    //                 '<button type="button" class="btn btn-default btn-sm btn-cust" data-toggle="tooltip" data-placement="top" title="删除"><span class="fa fa-remove"></span></button>'
+                    //               ].join('');
+                    //    }
+                    //},
+                    { field: 'USER_EMAIL', title: 'E_MAIL', width: 200 },
+                    { field: 'USER_TEL', title: '手机号', width: 130 },
+                    {
+                        field: 'USER_SEX', title: '性别', width: 70,
+                        formatter: function (value, row, index) {
+                            return value ? '<i class="fa fa-male" aria-hidden="true"></i> 男' : '<i class="fa fa-female" aria-hidden="true"></i> 女';
+                        }
+                    },
+                    { field: 'USER_POST', title: '职位', width: 80 },
+                    { field: 'DEPT_CODE', title: '部门ID', width: 200, align: 'left', hidden: true },
+                    { field: 'DEPT_NAME', title: '部门', width: 120, align: 'left' },
+                    { field: 'USER_DESC', title: '描述说明', width: 200 }
+
+                ]],
+                toolbar: '#toolbar'
+
+            })
+        });
+
+        function btnQuery_Click() {
+            var parms = {};
+            parms.userId = $("#txtUserID").val();
+            parms.userName = $("#txtUserName").val();
+            //parms.roleId = $("#txtRole").combobox('getValue');
+
+            $("#tb_list").datagrid('reload', parms);
+        }
+
+
+        function btnInsert_Click() {
+            $("<div/>").dialog({
+                id: "user_insert",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "insert.html",
+                title: "用户添加",
+                height: 400,
+                width: 350,
+                modal: true,
+                iconCls: 'fa fa-plus',
+                closable: true,
+                onLoad: function () {
+                    $("#txtSubUserId").focus();    //聚焦密码框
+
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+
+        function btnDelete_Click() {
+            var rows = $("#tb_list").datagrid('getChecked');
+            if (rows.length == 0) {
+                cMsg.alert_f('请选择要删除的行'); //请选择要删除的行
+                return;
+            }
+
+            var parms = {};
+            parms.userId = rows[0].USER_CODE;                                  //您确定要删除该用户？
+            cMsg.confirm("您确定要删除该用户？", function (r) {
+                if (r) {
+                    $.post("/route/admin/SysUser/Delete", parms, function (data) {
+                        if (data.type == 1) {
+                            $("#tb_list").datagrid('reload');
+                            cMsg.show(data.message);
+                        } else {
+                            cMsg.alert_f(data.message);
+                        }
+                    }, "json")
+                }
+            })
+
+
+        }
+
+        function btnEdit_Click() {
+            var rows = $("#tb_list").datagrid('getChecked');
+            if (rows.length == 0) {
+                cMsg.alert_f("请选择要修改的行"); //请选择要修改的行
+                return;
+            }
+
+            $("<div/>").dialog({
+                id: "user_edit",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "edit.html",
+                title: "用户修改",
+                height: 400,
+                width: 350,
+                modal: true,
+                iconCls: 'fa fa-edit',
+                closable: true,
+                onLoad: function () {
+                    $("#txtSubUserId").val(rows[0].USER_CODE);
+                    $("#txtSubUserName").val(rows[0].USER_NAME);
+                    $("#txtSubMail").val(rows[0].USER_EMAIL);
+                    $("#txtSubTel").val(rows[0].USER_TEL);
+                    if (rows[0].USER_SEX)
+                        $("#rdSubSexMan").attr("checked", "true");
+                    else
+                        $("#rdSubSexWan").attr("checked", "true");
+                    $("#txtSubPost").val(rows[0].USER_POST);
+                    if (rows[0].IS_ABLED)
+                        $("#cbIsAble").attr("checked", "true");
+                    else
+                        $("#cbIsAble").removeAttr("checked");
+
+                    if (rows[0].IS_C_PWD)
+                        $("#cbIsChangePwd").attr("checked", "true");
+                    else
+                        $("#cbIsChangePwd").removeAttr("checked");
+
+                    $("#txtSubDesc").val(rows[0].USER_DESC);
+                    $("#txtSubUserName").focus();    //聚焦密码框
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+
+        function btnAllotRole_Click() {
+            var rows = $("#tb_list").datagrid('getChecked');
+            if (rows.length == 0) {
+                cMsg.alert_f("请选择要分配的用户"); //请选择要分配的用户
+                return;
+            }
+            $("#hdSubUserId").val(rows[0].USER_CODE);
+            $("<div/>").dialog({
+                id: "user_allot_role",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "allot_role.html",
+                title: "分配角色",
+                height: 450,
+                width: 550,
+                modal: true,
+                iconCls: 'fa fa-users',
+                closable: true,
+                onLoad: function () {
+
+                    $("#txtSubUserName").val(rows[0].USER_CODE + "-" + rows[0].USER_NAME);
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+
+        function btnSetDept_Click() {
+            var rows = $("#tb_list").datagrid('getChecked');
+            if (rows.length == 0) {
+                cMsg.alert_f("请选择要设定的用户"); //请选择要设定的用户
+                return;
+            }
+            $("#hdSubUserId").val(rows[0].USER_CODE);
+            $("<div/>").dialog({
+                id: "user_set_dept",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "set_dept.html",
+                title: "设定部门",
+                height: 200,
+                width: 400,
+                modal: true,
+                iconCls: 'fa fa-delicious',
+                closable: true,
+                onLoad: function () {
+                    $("#txtSubUser").val(rows[0].USER_CODE + "-" + rows[0].USER_NAME);
+                    $('#txtSubDept').combotree("setValue", rows[0].DEPT_CODE); 
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+
+
+
+        //窗口大小改变时，重新设定div大小
+        $(window).resize(function () {
+            $("#panel_query").panel({ width: $(window).width() - 5 });
+            $("#panel_result").panel({ width: $(window).width() - 5 });
+
+            $('#tb_list').datagrid('resize', {
+                width: $(window).width() - 7,
+                height: $(window).height() - 120
+            });
+        });
+    </script>
+</body>
+</html>

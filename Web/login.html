@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>登录页面</title>
+    <link href="cij/css/login.css" rel="stylesheet" />
+ 
+</head>
+<body>
+    <div class="wrap">
+        <div class="banner-show" id="js_ban_content">
+            <div class="cell bns-01">
+                <div class="con"> </div>
+            </div>
+            <div class="cell bns-02" style="display:none;">
+                <div class="con">  </div>
+            </div>
+            <div class="cell bns-03" style="display:none;">
+                <div class="con"></div>
+            </div>
+        </div> 
+        <div class="banner-control" id="js_ban_button_box"> <a href="javascript:void(0);" class="left">左</a> <a href="javascript:void(0);" class="right">右</a> </div>
+        <div class="container">
+            <div class="login-box">
+                <div class="login-slogan"><span>用户登陆</span></div>
+                <div class="login-form" id="js-form-mobile">
+                    <br>
+                    <br>
+                    <div class="cell">
+                        <label>账号</label>
+                        <input type="text" id="txtUserId" title="请填写用户账号" class="form-control" placeholder="请填写用户账号" onkeypress="keyPress()" onkeyup="this.value = this.value.toUpperCase()" />
+                    </div>
+                    <div class="cell">
+                        <label>密码</label>
+                        <input type="password" id="txtUserPwd" title="请填写密码" class="form-control" placeholder="请填写密码" onkeypress="keyPress()" />
+                    </div>
+                    <br />
+                    <div class="bottom">
+                        <!--<a id="js-mobile_btn" href="javascript:void(0);" class="button btn-green" disabled onclick="btnLogin_OnClick()"> 登陆</a>-->
+                        <input type="button" id="btnLogin" class="button btn-green" onclick="btnLogin_OnClick()" value="登陆" />
+                    </div>
+                </div>
+                <div class="login-loading">
+                    <img id="img_loading" src="../Content/admin/img/loading.gif" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--required js script-->
+    <!-- jQuery 2.2.3 -->
+    <script src="Content/jquery/jquery.min.js"></script>
+    <script src="Content/jquer-blockUI/jquery.blockUI.js"></script>
+    <script>
+        $(function () { 
+            var defaultInd = 0;
+            var list = $('#js_ban_content').children();
+            var count = 0;
+            var change = function (newInd, callback) {
+                if (count) return;
+                count = 2;
+                $(list[defaultInd]).fadeOut(400, function () {
+                    count--;
+                    if (count <= 0) {
+                        if (start.timer) window.clearTimeout(start.timer);
+                        callback && callback();
+                    }
+                });
+                $(list[newInd]).fadeIn(400, function () {
+                    defaultInd = newInd;
+                    count--;
+                    if (count <= 0) {
+                        if (start.timer) window.clearTimeout(start.timer);
+                        callback && callback();
+                    }
+                });
+            }
+
+            var next = function (callback) {
+                var newInd = defaultInd + 1;
+                if (newInd >= list.length) {
+                    newInd = 0;
+                }
+                change(newInd, callback);
+            }
+
+            var start = function () {
+                if (start.timer) window.clearTimeout(start.timer);
+                start.timer = window.setTimeout(function () {
+                    next(function () {
+                        start();
+                    });
+                }, 8000);
+            }
+
+            start();
+
+            $('#js_ban_button_box').on('click', 'a', function () {
+                var btn = $(this);
+                if (btn.hasClass('right')) {
+                    //next
+                    next(function () {
+                        start();
+                    });
+                }
+                else {
+                    //prev
+                    var newInd = defaultInd - 1;
+                    if (newInd < 0) {
+                        newInd = list.length - 1;
+                    }
+                    change(newInd, function () {
+                        start();
+                    });
+                }
+                return false;
+            });
+            $('#txtUserId').focus();
+        });
+
+        function keyPress() {
+            var userId = $("#txtUserId").val();
+            var userPwd = $("#txtUserPwd").val();
+            if (event.keyCode == 13) {
+                if (userId == "" || userId == "请填写用户账号") {
+                    $('#txtUserId').focus();
+                } else if (userPwd == "" || userPwd == "请填写密码") {
+                    $('#txtUserPwd').focus();
+                } else {
+                    btnLogin_OnClick();
+                }
+            }
+        }
+
+        function btnLogin_OnClick() {
+
+            $(".login-box").block({
+                message: '登陆中……',
+                css: {
+                    backgroundColor: 'rgb(0, 0, 0, 0.1);',
+                    opacity: 0.9,
+                    color: '#fff',
+                    border: '1px solid rgb(170, 170, 170)'
+                }
+            });  
+
+            var parms = {};
+            parms.userName = $("#txtUserId").val();
+            parms.pwd = $("#txtUserPwd").val();
+            if (parms.userName == "" || parms.userName == "请填写用户账号") {
+                layer.alert("请输入账号", { icon: 2 })
+                $('#txtUserId').focus();
+                return;
+            }
+            if (parms.pwd == "" || parms.pwd == "请填写密码") {
+                layer.alert("请输入密码", { icon: 2 })
+                $('#txtUserPwd').focus();
+                return;
+            }
+            $('#btnLogin').attr('disabled', true);
+            $("#img_loading").show();
+            $.post("../route/admin/Account/Login", parms, function (data) {
+                $('#btnLogin').attr('disabled', false);
+                $('#txtUserPwd').focus();
+                $(".login-box").unblock();
+                $("#img_loading").hide();
+                if (data.type == 1) {
+                    window.location.href = "index.html";
+                } else {
+                    alert(data.message) 
+                }
+                
+            });
+        }
+    </script>
+</body>
+</html>

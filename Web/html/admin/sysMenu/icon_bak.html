@@ -1,0 +1,342 @@
+﻿<script>
+    var iconCount = 78;
+    $("#Already").hide();
+    function checkImgClass(img) {
+        $("#txtSubMenuIcon").val(img.id.split('.')[1]);
+        var src = $(img).children("div").find("img");
+        src = src[0].src;
+        $("#Already").show();
+        $("#Already").find("img")[0].src = src;
+    }
+    function btnIconQuery_Click() {
+        $("#xiye").html(1);
+        IconPostData(1, iconCount);
+    }
+    function IconPostData(pageIndex, pageCount) {
+        $.ajax({
+            type: "GET",//请求方式
+            url: "/Content/themes/icon.css",//地址，就是action请求路径
+            data: "text",//数据类型text xml json  script  jsonp
+            success: function (msg) {//返回的参数就是 action里面所有的有get和set方法的参数
+
+                var arry = msg.split('}');
+                var iconName = [];
+                var iconUrl = [];
+                for (var i = 0; i < arry.length; i++) {
+                    iconName[i] = arry[i].split('{')[0];
+                    var tmp = arry[i].split(')')[0].split('(')[1];
+                    if (tmp == undefined) {
+                        iconUrl[i] = undefined;
+                        continue;
+                    }
+                    iconUrl[i] = tmp.substr(1, tmp.length - 2);
+                }
+                var pain = (pageIndex - 1) * pageCount;
+                var painC = pain + pageCount;
+
+                var html = "<ul class='ImgUrlContents16'>";
+                for (var i = pain ; i < iconName.length; i++) {
+                    if (iconUrl[i] == undefined) {
+                        painC++;
+                        continue;
+                    }
+                    if (i > painC - 1) {
+                        break;
+                    }
+                    html += "<li>";
+                    html += "<a href='javascript:void(0)' onclick='checkImgClass(this);' id='" + iconName[i] + "'>";
+                    html += "<div>";
+                    html += "<img src='/Content/themes/" + iconUrl[i] + "' />";
+                    html += "</div>";
+                    html += "</a>";
+                    html += " </li>";
+                }
+                html += "</ul>";
+                document.getElementById("div_Img").innerHTML = "";
+                document.getElementById("div_Img").innerHTML = html;
+                if (iconName.length % pageCount != 0) {
+                    $("#mo").html(parseInt(iconName.length / pageCount) + 1);
+                } else {
+                    $("#mo").html(iconName.length / pageCount);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.status);
+                alert(XMLHttpRequest.readyState);
+                alert(textStatus);
+            }
+        });
+    }
+
+    //分页的显示与隐藏
+    $("#xifenye").click(function (a) {
+        $("#uljia").empty();
+        $("#xab").toggle();
+        //显示出的一共多少页
+        var uljia = $("#uljia");
+        var page = parseInt($("#xiye").html());//获取当前的页数
+        var pages = parseInt($("#mo").html());//获取当前的总页数
+        for (var i = 1; i <= pages; i++) {
+            var H = "<li  onclick='fl(" + i + "," + pages + ")'>" + i + "</li>";//添加一共多少页和点击事件
+
+            uljia.append(H);
+        }
+        scrolltop(page);
+    })
+    //点击分页显示的方法
+    function fl(p1, p2) {
+        //var p=p1;
+        $("#xiye").empty();
+        $("#xiye").html(p1);//给显示的页数赋值
+        IconPostData(p1, iconCount);
+    }
+    //分页的的上一页和下一页
+    function topclick() {
+        var v = document.getElementById("xiye");
+        var num = v.innerHTML;
+        if (num > 1) {
+            num--;
+            v.innerHTML = num;
+            var hei = 25 * num - 25;
+            $("#xab").scrollTop(hei);
+            IconPostData(num, iconCount);
+        }
+
+    }
+    function downclick() {
+        var pages = parseInt($("#mo").html());//获取当前的总页数
+        var v = $("#xiye");
+        var num = parseInt(v.html());
+        if (num < pages) {
+            num = ++num;
+            v.html(num);
+            scrolltop(num);
+            IconPostData(num, iconCount);
+        }
+    }
+    //分页的的首页和未页
+    function first() {
+        var v = document.getElementById("xiye");
+        v.innerHTML = 1;
+        scrolltop(v.innerHTML);
+        IconPostData(1, iconCount);
+    }
+    function last() {
+        var v = document.getElementById("xiye");
+        var l = document.getElementById("mo");
+        v.innerHTML = l.innerHTML;
+        scrolltop(v.innerHTML);
+        IconPostData(l.innerHTML, iconCount);
+    }
+    //滚动条
+    function scrolltop(top) {
+        var hei = 25 * top - 25;
+        $("#xab").scrollTop(hei);
+    }
+</script>
+
+<style type="text/css">
+    li {
+        list-style: none;
+    }
+
+    img {
+        border: none;
+    }
+
+    .ImgUrlContents16 {
+        width: 400px;
+        list-style: none;
+        margin-left:-25px;
+    }
+
+        .ImgUrlContents16 li {
+            overflow: hidden;
+            text-align: center;
+            width: 30px;
+            float: left;
+            height: 30px;
+            line-height: 20px;
+        }
+
+            .ImgUrlContents16 li a {
+                width: 100%;
+                height: 100%;
+            }
+
+                .ImgUrlContents16 li a div {
+                    width: 100%;
+                    height: 100%;
+                }
+
+                    .ImgUrlContents16 li a div img {
+                        padding-top: 5px;
+                    }
+
+                    .ImgUrlContents16 li a div:hover {
+                        background: url(/Views/images/HotBtnBack.jpg) center no-repeat;
+                        color: black;
+                        text-decoration: none;
+                        cursor: pointer;
+                        background-size: 100% 100%;
+                        background-repeat: no-repeat;
+                    }
+
+    .ImgUrlContents32 {
+        width: 400px;
+        list-style: none;
+    }
+
+        .ImgUrlContents32 li {
+            overflow: hidden;
+            text-align: center;
+            width: 45px;
+            float: left;
+            height: 45px;
+            line-height: 20px;
+        }
+
+            .ImgUrlContents32 li a div {
+                width: 100%;
+                height: 100%;
+            }
+
+                .ImgUrlContents32 li a div img {
+                    padding-top: 5px;
+                }
+
+                .ImgUrlContents32 li a div:hover {
+                    background: url(/Views/images/HotBtnBack.jpg) center no-repeat;
+                    color: black;
+                    text-decoration: none;
+                    cursor: pointer;
+                    background-size: 100% 100%;
+                    background-repeat: no-repeat;
+                }
+
+
+    /***************分页******************/
+    .fenye {
+        margin-top: 10px;
+    }
+
+        .fenye ul {
+            float: left;
+            margin-left: 32px;
+        }
+
+            .fenye ul li {
+                float: left;
+                margin-left: 5px;
+                padding: 4px 6px;
+                border: 1px solid #ccc;
+                font-weight: bold;
+                cursor: pointer;
+                color: #999;
+            }
+
+                .fenye ul li a {
+                    color: #999;
+                }
+
+                .fenye ul li.xifenye {
+                    width: 38px;
+                    text-align: center;
+                    float: left;
+                    position: relative;
+                    cursor: pointer;
+                }
+
+                .fenye ul li .xab {
+                    float: left;
+                    position: absolute;
+                    width: 39px;
+                    border: 1px solid #ccc;
+                    height: 123px;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    top: -125px;
+                    background-color: #fff;
+                    display: inline;
+                    left: -1px;
+                    width: 50px;
+                }
+
+                    .fenye ul li .xab ul {
+                        margin-left: 0;
+                        padding-bottom: 0;
+                    }
+
+                        .fenye ul li .xab ul li {
+                            border: 0;
+                            padding: 4px 0px;
+                            color: #999;
+                            width: 34px;
+                            margin-left: 0px;
+                            text-align: center;
+                        }
+
+    .button {
+        display: inline-block;
+        zoom: 1;
+        vertical-align: baseline;
+        margin: 2 2px;
+        outline: none;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        font: 14px/100% Arial, Helvetica, sans-serif;
+        padding: .5em 2em .55em;
+        text-shadow: 0 1px 1px rgba(0,0,0,.3);
+        -webkit-border-radius: .5em;
+        -moz-border-radius: .5em;
+        border-radius: .5em;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+        -moz-box-shadow: 0 1px 2px rgba(0,0,0,.2);
+        box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    }
+
+    .small {
+        font-size: 12px;
+        padding: .2em 1em .275em;
+    }
+
+    .white {
+        color: #606060;
+        border: solid 1px #b7b7b7;
+        background: #fff;
+        background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+        background: -moz-linear-gradient(top, #fff, #ededed);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ededed');
+    }
+</style>
+<div>
+    <div style="padding-left:20px;height:40px;">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="icon-search" plain="true" id="btnInsert" lang='true' langkey='btn_query'
+           onclick="btnIconQuery_Click()">查询</a>
+        <div style="width: 70px; float: right; background-color: #a4e8f5; margin-right: 100px; margin-top: 5px;padding-left:10px;padding-bottom: 5px;" id="Already">
+            <span style="margin-top:-5px">已选:</span>
+            <img src="" width="16" style="margin-top:5px" />
+        </div>
+    </div>
+    <div id="div_Img" style="height:200px; border:1px solid #d0c9c9">
+        <ul class='ImgUrlContents16'></ul>
+    </div>
+    <div>
+        <div class="fenye">
+            <ul>
+                <li id="first" onclick="first()">首页</li>
+                <li id="top" onclick="topclick()">上一页</li>
+                <li class="xifenye" id="xifenye">
+                    <a id="xiye">1</a>/<a id="mo">0</a>
+                    <div class="xab" id="xab" style="display:none">
+                        <ul id="uljia"></ul>
+                    </div>
+                </li>
+                <li id="down" onclick="downclick()">下一页</a></li>
+                <li id="last" onclick="last()">末页</li>
+            </ul>
+
+        </div>
+    </div>
+</div>

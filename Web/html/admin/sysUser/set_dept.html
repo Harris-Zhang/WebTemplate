@@ -1,0 +1,78 @@
+﻿
+<div class="dialog">
+    <table class="tablem">
+        <tr>
+            <th>
+                <span>用户</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubUser" class="form-control" disabled="disabled" />
+            </td>
+        </tr> 
+        <tr>
+            <th>
+                <span>部门</span>
+            </th>
+            <td>
+                <input id="txtSubDept" class="easyui-combotree" /> 
+            </td>
+        </tr>
+    </table>
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-edit" plain="true"
+           onclick="btnSubEdit_Click()">修改</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true"
+           onclick="btnCancel_Click()">取消</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+
+    $(function () {
+        //部门初始化
+        $("#txtSubDept").combotree({
+            url: '/route/admin/SysDept/GetListComboTree',
+            valueField: 'id',
+            textField: 'text',
+            method: 'POST',
+            onlyLeafCheck: true,
+            lines: true,
+            editable: false,
+            onLoadSuccess: function (row, data) {
+                $('#txtSubDept').combotree('tree').tree('expandAll');
+            },
+            onBeforeExpand: function () {
+
+            }
+
+        }); 
+
+    });
+
+
+    function btnSubEdit_Click() {
+        var parms = {};
+        parms.user_code = $("#txtSubUser").val().split("-")[0];
+        parms.dept_code = $("#txtSubDept").combotree("getValue");
+        if (parms.dept_code == "") {
+            cMsg.alert_f("请选择部门"); //请选择部门
+            return;
+        }
+
+        $.post('/route/admin/SysUser/UpdateUserDept', parms, function (data) {
+            
+            if (data.type == 1) {
+                $("#tb_list").datagrid('reload');
+                $('#user_set_dept').dialog('close');
+                cMsg.show(data.message);
+            } else {
+                cMsg.alert_f(data.message);
+            }
+        }, 'json');
+
+    }
+    function btnCancel_Click() {
+        $('#user_set_dept').dialog('close');
+    }
+    $(".footer").width($(".footer").width() - 12);
+</script>

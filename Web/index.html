@@ -1,0 +1,746 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>管理页面模板</title>
+    <link href="cij/css/main.css" rel="stylesheet" />
+    <link href="Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="Content/admin/css/admin.css" rel="stylesheet" />
+    <link href="Content/admin/css/skins/all-skins.css" rel="stylesheet" />
+</head>
+<!--
+|---------------------------------------------------------|
+| SKINS         | skin-blue-black                         |
+|               | skin-purple-black                       |
+|               | skin-dblue-dblue                        |
+|               | skin-dgreen-dgreen                      |
+|               | skin-red                                |
+|               | skin-green                              |
+|---------------------------------------------------------|
+-->
+<body class="skin-dgreen-dgreen sidebar-mini">
+    <div class="wrapper">
+        <!-- 头部导航功能列表 -->
+        <header class="main-header">
+            <!-- Logo -->
+            <a href="#" class="logo">
+                <!-- 侧边栏小logo 50x50 -->
+                <span class="logo-mini"><img src="Content/admin/img/logo_sm.png" style="width: 40px;" /></span>
+                <!-- 常规状态下的logo -->
+                <span class="logo-lg"><img src="Content/admin/img/logo.png" style="width: 180px;" /></span>
+            </a>
+
+            <!-- 标题导航 -->
+            <nav class="navbar navbar-static-top" role="navigation">
+                <!-- 收缩按钮-->
+                <a href="#" class="menu-button sidebar-toggle" role="button">
+                    <i class="fa fa-bars"></i>
+                    <span class="sr-only">菜单列表收缩</span>
+                </a>
+                <!-- 其它功能按钮-->
+                <a href="javascript:void(0);" class="menu-button" role="button" onclick="test();">
+                    <i class="fa fa-sitemap"></i><span>本系统</span>
+                </a>
+                <a href="javascript:void(0);" class="menu-button" role="button" onclick="test2();">
+                    <i class="fa fa-sitemap"></i><span>松下</span>
+                </a>
+                <!-- 导航栏右侧按钮 -->
+                <div class="navbar-custom-menu">
+                    <ul class="nav navbar-nav">
+
+                        <!-- 用户信息 -->
+                        <li class="dropdown user user-menu">
+                            <!-- 切换显示、隐藏按钮 -->
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <img src="Content/admin/img/user_head.jpg" class="user-image" alt="User Image" />
+                                <span id="user_name">管理员</span>
+                            </a>
+                            <ul class="dropdown-menu">
+
+                                <li class="user-header">
+                                    <img src="Content/admin/img/user_head.jpg" class="img-circle" alt="User Image" />
+                                    <p>
+                                        <span id="user_name2">管理员</span>的小情人
+
+                                    </p>
+                                </li>
+                                <li class="user-body">
+                                    <div class="user-body-buttons">
+                                        <div class="user-body-button">
+                                            <a href="javascript:void(0);" onclick="OpenPersonalInfo();">个人信息</a>
+                                        </div>
+                                        <div class="user-body-button">
+
+                                            <a href="javascript:void(0);" onclick="OpenChangePwd()">修改密码</a>
+                                        </div>
+                                        <div class="user-body-button">
+                                            <a href="javascript:void(0);" onclick="loginOut()">退出系统</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        <!--<li>
+                            <a href="#">
+                                <i class="fa fa-bitcoin"></i>
+                            </a>
+                        </li>-->
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <!--左侧菜单栏-->
+        <aside class="main-sidebar">
+            <section class="sidebar">
+                <!-- 菜单列表 -->
+                <ul class="sidebar-menu"></ul>
+            </section>
+        </aside>
+        <!-- 主体内容 -->
+        <div class="content-wrapper" id="content-wrapper">
+            <div class="content-tabs">
+                <button class="roll-nav roll-left tabLeft" onclick="$.BZAdmin.scrollTab.left()" role="button">
+                    <i class="fa fa-backward"></i>
+                </button>
+                <nav class="page-tabs menuTabs tab-ui-menu" id="tab-menu">
+                    <div class="page-tabs-content" style="margin-left: 0px;">
+
+                    </div>
+                </nav>
+                <button class="roll-nav roll-right tabRight" onclick="$.BZAdmin.scrollTab.right()" role="button">
+                    <i class="fa fa-forward" style="margin-left: 3px;"></i>
+                </button>
+                <div class="btn-group roll-nav roll-right">
+                    <button class="dropdown tabClose" data-toggle="dropdown" role="button">
+                        页签操作<i class="fa fa-caret-down" style="padding-left: 3px;"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right" style="min-width: 128px;right:0;left:auto">
+                        <li><a class="tabReload" href="javascript:$.BZAdmin.ContentTabs.refreshTab();">刷新当前</a></li>
+                        <li><a class="tabCloseCurrent" href="javascript:$.BZAdmin.ContentTabs.closeCurrentTab();">关闭当前</a></li>
+                        <li><a class="tabCloseAll" href="javascript:$.BZAdmin.ContentTabs.closeOtherTabs(true);">全部关闭</a></li>
+                        <li><a class="tabCloseOther" href="javascript:$.BZAdmin.ContentTabs.closeOtherTabs();">关闭其它</a></li>
+                    </ul>
+                </div>
+                <button class="roll-nav roll-right fullscreen" role="button"><i class="fa fa-arrows-alt"></i></button>
+            </div>
+            <div class="content-iframe " style="background-color: #ffffff; ">
+                <div class="tab-content " id="tab-content">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="personal_info" style="display:none;">
+        <table class="queryTable">
+            <tr>
+                <th>账号：</th>
+                <td><input id="txtUserCode" type="text" class="form-control" /></td>
+            </tr>
+            <tr>
+                <th>姓名：</th>
+                <td><input id="txtUserName" type="text" class="form-control" /></td>
+            </tr>
+            <tr>
+                <th>邮箱：</th>
+                <td><input id="txtEmail" type="text" class="form-control" /></td>
+            </tr>
+            <tr>
+                <th>手机：</th>
+                <td><input id="txtTel" type="text" class="form-control" /></td>
+            </tr>
+            <tr>
+                <th>性别：</th>
+                <td><input id="txtSex" type="text" class="form-control" /></td>
+            </tr>
+        </table>
+        <div>
+            <a href="#" data-skin=""></a>
+        </div>
+    </div>
+
+    <div id="personal_change_pwd" style="display:none;">
+        <table class="queryTable">
+            <tr>
+                <th>旧密码：</th>
+                <td><input id="txtUserPwdOld" type="text" class="form-control" /></td>
+            </tr>
+            <tr>
+                <th>新密码：</th>
+                <td><input id="txtUserPwdNew" type="text" class="form-control" /></td>
+            </tr>
+            <tr>
+                <th>确认密码：</th>
+                <td><input id="txtUserPwdNew2" type="text" class="form-control" /></td>
+            </tr>
+            <tr>
+                <th>
+                    重改二维码：
+                </th>
+                <td>
+                    <div class="checkbox checkbox-info">
+                        <input type="checkbox" id="cbIsQR" class="styled" />
+                        <label for="cbIsQR">
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button type="button" onclick="btnChangePwd_Click();">修改</button></td>
+            </tr>
+        </table>
+    </div>
+
+
+    <!--required js script-->
+    <!-- jQuery 2.2.3 -->
+    <script src="Content/jquery/jquery.min.js"></script>
+    <script src="Content/jquery-session/jquery.session.js"></script>
+    <!--遮罩层-->
+    <script src="Content/jQuer-blockUI/jquery.blockUI.js"></script>
+    <!--滚动条-->
+    <!--<script src="Content/jQuery-slimScroll/jquery.slimscroll.js"></script>-->
+    <!--admin-->
+    <script src="Content/admin/js/admin.js"></script>
+    <script src="Content/layer/layer.js"></script>
+    <script>
+        $(function () {
+            $.BZAdmin.ContentTabs.addTabs(({ id: '0', title: '欢迎页', close: false, url: 'home.html' }));
+            GetMenuList();
+            GetUser();
+        })
+
+        function test() {
+
+            GetMenuList();
+        }
+        function test2() {
+            var data2 = [
+                {
+                    "id": "B053334A-73C2-7460-9F73-39E16BE45451",
+                    "text": "基础设定",
+                    "icon": "fa fa-asterisk",
+                    "children": [
+                        {
+                            "id": "E83DEA30-466E-8EDB-3DB4-39E16C072EE7",
+                            "text": "委外加工供应商信息设定",
+                            "icon": "fa fa-asterisk",
+                            "url": "/Views/html/01baseSetting/supp/supp_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "7C547302-6836-082D-E2E6-39E16C08AE31",
+                            "text": "客户信息设定",
+                            "icon": "fa fa-asterisk",
+                            "url": "/Views/html/01baseSetting/cust/cust_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "8C6BC352-BB24-2D3A-4234-39E1712213F5",
+                            "text": "交期通知人员设定",
+                            "icon": "fa fa-asterisk",
+                            "url": "/Views/html/01baseSetting/mail/mail_rule.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "014A584A-42D0-256C-392E-39E171230795",
+                            "text": "工站信息设定",
+                            "icon": "fa fa-asterisk",
+                            "url": "/Views/html/01baseSetting/fac/oper_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "FC36ADF9-FC66-94CD-BEB4-39E17123A23E",
+                            "text": "设备信息设定",
+                            "icon": "fa fa-asterisk",
+                            "url": "/Views/html/01baseSetting/fac/eqp_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "AC54C8B5-CC66-94A9-4E4E-39E171259F11",
+                            "text": "工位信息设定",
+                            "icon": "fa fa-asterisk",
+                            "url": "/Views/html/01baseSetting/fac/station_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "D1611D9E-3727-76FD-6E14-39E17126296F",
+                            "text": "材质规格主档维护",
+                            "icon": "fa fa-asterisk",
+                            "url": "/Views/html/01baseSetting/fac/mtrl_model.htm",
+                            "targetType": "iframe-tab"
+                        }
+                    ]
+                },
+                {
+                    "id": "D3572EF8-8570-DEB5-5EB5-39E16BE6191B",
+                    "text": "订单管理",
+                    "icon": "fa fa-file-text-o",
+                    "children": [
+                        {
+                            "id": "9418FD6B-642D-466A-7A4B-39E16C273334",
+                            "text": "订单作业",
+                            "icon": "fa fa-file-text-o",
+                            "url": "/Views/html/02poMgmt/po/po_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "F85D0176-E0DF-DEA0-E7AC-39E16C2F20CF",
+                            "text": "品号信息查询",
+                            "icon": "fa fa-gears",
+                            "url": "/Views/html/02poMgmt/part/part_query.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "94698531-B819-151C-7D12-39E1965A9AB3",
+                            "text": "图纸调阅",
+                            "icon": "fa fa-file",
+                            "url": "/Views/html/02poMgmt/drawn/drawn_read.htm",
+                            "targetType": "iframe-tab"
+                        }
+                    ]
+                },
+                {
+                    "id": "8F5FF2EE-DF8B-A8FF-E1CA-39E16BE760C3",
+                    "text": "工艺管理",
+                    "icon": "fa fa-edit",
+                    "children": [
+                        {
+                            "id": "E55BADC0-25D3-13B5-4F58-39E16C36687F",
+                            "text": "工艺及毛坯作业",
+                            "icon": "fa fa-list-alt",
+                            "url": "/Views/html/03techMgmt/flow_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "ACEE4F6D-3FA2-A3CE-E4C2-39E16C393803",
+                            "text": "工艺审核",
+                            "icon": "fa fa-thumbs-up",
+                            "url": "/Views/html/03techMgmt/flow_verify.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "88A3FDFB-B9E8-8C63-7E70-39E16C4A251E",
+                            "text": "工单毛坯审核",
+                            "icon": "fa fa-cube",
+                            "url": "/Views/html/03techMgmt/blank_wo_verify.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "288E74C7-6648-D95D-D31E-39E16C4D6281",
+                            "text": "标准工艺作业",
+                            "icon": "fa fa-lock",
+                            "url": "/Views/html/03techMgmt/std_flow_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "6B88FF44-E757-48CD-238D-39E16C4E9E8F",
+                            "text": "工单毛坯查询",
+                            "icon": "fa fa-search",
+                            "url": "/Views/html/03techMgmt/wo_blank_query.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "33F37BFE-2D4B-D44C-A684-39E16C4FCED3",
+                            "text": "工艺工时查询",
+                            "icon": "fa fa-list",
+                            "url": "/Views/html/03techMgmt/flow_query.htm",
+                            "targetType": "iframe-tab"
+                        }
+                    ]
+                },
+                {
+                    "id": "E9C8E542-B51B-2590-F51B-39E16BE87DA0",
+                    "text": "报价管理",
+                    "icon": "fa fa-pencil",
+                    "children": [
+                        {
+                            "id": "3ECE6385-6DC0-C74F-CC9A-39E16C1F256C",
+                            "text": "物料成本维护",
+                            "icon": "fa fa-stack-overflow",
+                            "url": "/Views/html/04offerMgmt/mtrlCost/mtrl_cost_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "B84BDD37-E7FA-872A-6D17-39E16C3AB7FB",
+                            "text": "工艺成本维护",
+                            "icon": "fa fa-hashtag",
+                            "url": "/Views/html/04offerMgmt/flowCost/flow_cost_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "37899FF0-FF64-8977-DF9D-39E16C3C5299",
+                            "text": "管消费用维护",
+                            "icon": "fa fa-truck",
+                            "url": "/Views/html/04offerMgmt/admintra/admintra_cost_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "8A3818E6-98BC-E48E-F95D-39E16C294972",
+                            "text": "报价计算",
+                            "icon": "fa fa-percent",
+                            "url": "/Views/html/04offerMgmt/calcCost/cost_calc.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "2530090C-EF1A-9A2F-BBE4-39E16C29DF20",
+                            "text": "成本核算",
+                            "icon": "fa fa-stop-circle",
+                            "url": "/Views/html/04offerMgmt/cost_adjust_account.htm",
+                            "targetType": "iframe-tab"
+                        }
+                    ]
+                },
+                {
+                    "id": "30C4C5BA-11DD-A10A-D8E3-39E16BEB525A",
+                    "text": "生产管理",
+                    "icon": "fa fa-calendar",
+                    "children": [
+                        {
+                            "id": "BC94F105-0B57-2CC4-9267-39E16DBF62D1",
+                            "text": "工单投产",
+                            "icon": "fa fa-building-o",
+                            "url": "/Views/html/05mfgMgmt/wo/wo_pre.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "22F0C685-B025-2BF5-907A-39E16C0E036A",
+                            "text": "标签机及打印机管理",
+                            "icon": "fa fa-print",
+                            "url": "/Views/html/05mfgMgmt/printer_manage.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "3CDCD442-7579-95DE-4631-39E172FABC9F",
+                            "text": "工艺变更",
+                            "icon": "fa fa-random",
+                            "url": "/Views/html/05mfgMgmt/tech/tech_change.html",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "505561FF-D7B6-4E65-22ED-39E22709996D",
+                            "text": "工艺转委外",
+                            "icon": "fa fa-map-signs",
+                            "url": "/Views/html/05mfgMgmt/tech/tech_out_set.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "A4C220CA-4977-F184-B393-39E173C7902D",
+                            "text": "批次锁定解锁",
+                            "icon": "fa fa-expeditedssl",
+                            "url": "/Views/html/05mfgMgmt/wo/wo_hold.html",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "FE6EB622-7AE9-D25C-0ED7-39E181163E4E",
+                            "text": "工单管理",
+                            "icon": "fa fa-edit",
+                            "url": "/Views/html/05mfgMgmt/wo/wo_modifie.html",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "CD93594F-B619-A630-D4AA-39E1AF51E44A",
+                            "text": "到料确认",
+                            "icon": "fa fa-check",
+                            "url": "/Views/html/05mfgMgmt/blank_arrive.html",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "1A93F7FC-48CC-CC2A-A82A-39E1BFF872E7",
+                            "text": "领料",
+                            "icon": "fa fa-upload",
+                            "url": "/Views/html/05mfgMgmt/blank_delivery.html",
+                            "targetType": "iframe-tab"
+                        }
+                    ]
+                },
+                {
+                    "id": "0BB5C9DC-E0DA-B85D-F2A5-39E16BEBF296",
+                    "text": "过账管理",
+                    "icon": "fa fa-barcode",
+                    "children": [
+                        {
+                            "id": "C39E8DA8-349D-5EC8-7930-39E16BEEE9E4",
+                            "text": "一般过账",
+                            "icon": "fa fa-sort-amount-desc",
+                            "url": "/Views/html/06passMgmt/normal/normal_pass.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "02C61A16-B690-E44A-C25F-39E16BEFE826",
+                            "text": "机加过账",
+                            "icon": "fa fa-gears",
+                            "url": "/Views/html/06passMgmt/nc/nc_pass.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "B5B5DFBE-19AC-9153-DC34-39E176AFC6C8",
+                            "text": "委外出",
+                            "icon": "fa fa-arrows-h",
+                            "url": "/Views/html/06passMgmt/tech_out/out_pass.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "554F03D0-3960-08E0-4AD7-39E176B03F48",
+                            "text": "委外入",
+                            "icon": "fa fa-exchange",
+                            "url": "/Views/html/06passMgmt/tech_in/in_pass.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "44E485C7-31A8-7926-12F1-39E16C108FBA",
+                            "text": "标签打印",
+                            "icon": "fa fa-print",
+                            "url": "/Views/html/06passMgmt/lable/lable_print.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "D7D58C32-A868-2387-8417-39E16C1139A2",
+                            "text": "送货单打印",
+                            "icon": "fa fa-print",
+                            "url": "/Views/html/06passMgmt/ticket/delivery_print.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "05F2F931-2F64-F3D0-1F42-39E1717D1F6F",
+                            "text": "跳站",
+                            "icon": "fa fa-mail-reply",
+                            "url": "/Views/html/06passMgmt/jump_station.html",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "D0949C0B-6309-4304-E450-39E17183669C",
+                            "text": "撤销过账",
+                            "icon": "fa fa-sign-out",
+                            "url": "/Views/html/06passMgmt/undo_pass.html",
+                            "targetType": "iframe-tab"
+                        }
+                    ]
+                },
+                {
+                    "id": "2FA25552-0B4B-A4B9-3B47-39E16BECB8F3",
+                    "text": "品质管理",
+                    "icon": "fa fa-bar-chart",
+                    "children": [
+                        {
+                            "id": "6D3136EE-0447-1BB4-66E0-39E212628BD2",
+                            "text": "维修过账",
+                            "icon": "fa fa-hashtag",
+                            "url": "/Views/html/07qcMgmt/repair/repair_pass.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "52D6BED7-A8FA-41EF-B0E9-39E1D98907E4",
+                            "text": "到货检验",
+                            "icon": "fa fa-bookmark",
+                            "url": "/Views/html/07qcMgmt/qc/qc_start.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "A99F393C-4F29-6B87-B4F8-39E1D2EAC328",
+                            "text": "品质过账",
+                            "icon": "fa fa-eye",
+                            "url": "/Views/html/07qcMgmt/qc/qc_pass.htm",
+                            "targetType": "iframe-tab"
+                        }
+                    ]
+                },
+                {
+                    "id": "1354E139-E63A-4DE5-7A5D-A5B9AA84A2DB",
+                    "text": "系统报表",
+                    "icon": "fa fa-circle-o",
+                    "children": [
+                        {
+                            "id": "C85C82B9-8479-9817-22DC-39E26A08198C",
+                            "text": "订单追踪",
+                            "icon": "fa fa-file-excel-o",
+                            "url": "/Views/html/08report/po_trace.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "F37F0EA9-F529-76F0-410C-39E26A0999C4",
+                            "text": "过账详情",
+                            "icon": "fa fa-file-excel-o",
+                            "url": "/Views/html/08report/sublot_log.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "39B29E28-5C4B-DCC2-31DC-39E26A0B8F12",
+                            "text": "质检详情",
+                            "icon": "fa fa-file-excel-o",
+                            "url": "/Views/html/08report/qc_query.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "AEFD65C9-C569-37B9-8CCF-39E26A0C2AE5",
+                            "text": "委外详情",
+                            "icon": "fa fa-file-excel-o",
+                            "url": "/Views/html/08report/outsource_query.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "0C3BA0D6-CDBC-49DE-6F76-39E26A0D0076",
+                            "text": "库存查询",
+                            "icon": "fa fa-file-excel-o",
+                            "url": "/Views/html/08report/stk_query.htm",
+                            "targetType": "iframe-tab"
+                        }
+                    ]
+                },
+                {
+                    "id": "201701210906149931110F173F1D381",
+                    "text": "系统设置",
+                    "icon": "fa fa-circle-o",
+                    "children": [
+                        {
+                            "id": "B753E139-3499-91FB-3A81-4F25EFEC4763",
+                            "text": "用户管理",
+                            "icon": "fa fa-angle-double-right",
+                            "url": "/Views/html/00admin/sysUser/index.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "201701210906149931110F173F1D383",
+                            "text": "菜单管理",
+                            "icon": "fa fa-angle-double-right",
+                            "url": "/Views/html/00admin/sysMenu/index.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "E853E139-6293-2733-C720-8B3667E5D0E1",
+                            "text": "角色管理",
+                            "icon": "fa fa-angle-double-right",
+                            "url": "/Views/html/00admin/sysRole/index.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "2017020409041060313064A8BE79EE4",
+                            "text": "权限分配",
+                            "icon": "fa fa-angle-double-right",
+                            "url": "/Views/html/00admin/sysRight/index.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "E953E139-153E-0CCB-6FE1-570C763431B9",
+                            "text": "部门管理",
+                            "icon": "fa fa-angle-double-right",
+                            "url": "/Views/html/00admin/sysDept/index.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "EA53E139-58DA-EEFF-C5E9-E684D8854DFD",
+                            "text": "系统日志",
+                            "icon": "fa fa-angle-double-right",
+                            "url": "/Views/html/00admin/sysLog/index.htm",
+                            "targetType": "iframe-tab"
+                        },
+                        {
+                            "id": "EB53E139-04D6-2B11-F8E6-9CC41E580E87",
+                            "text": "系统异常",
+                            "icon": "fa fa-angle-double-right",
+                            "url": "/Views/html/00admin/sysException/index.htm",
+                            "targetType": "iframe-tab"
+                        }
+                    ]
+                }
+            ];
+            $(".sidebar-menu").empty();
+            $('.sidebar-menu').sidebarMenu({ data: data2 });
+
+        }
+
+        function GetMenuList() {
+            $.get('../route/admin/Home/GetMenuList', function (data) {
+                if (data.type == -2) {//登陆超时，请重新登陆
+                    window.location.href = "login.html";
+                }
+                else if (data.type == -1) {//系统异常
+                    layer.msg(res.message, { icon: 2 });
+                    return;
+                }
+                $(".sidebar-menu").empty();
+                $('.sidebar-menu').sidebarMenu({ data: data.value });
+            }, 'json');
+        }
+
+        function GetUser() {
+            $.get("/route/admin/Home/GetUser", function (data) {
+                if (data.type == -2) {//登陆超时，请重新登陆
+                    window.location.href = "login.html";
+                }
+                $("#user_name").html(data.value.USER_NAME);
+                $("#user_name2").html(data.value.USER_NAME);
+                $.session.set('user_name', data.value.USER_CODE);
+
+                $("#txtUserCode").val(data.value.USER_CODE);
+                $("#txtUserName").val(data.value.USER_NAME);
+                $("#txtEmail").val(data.value.USER_EMAIL);
+                $("#txtTel").val(data.value.USER_TEL);
+                $("#txtSex").val(data.value.USER_SEX ? "男" : "女");
+            });
+        }
+
+
+        function OpenPersonalInfo() {
+            layer.open({
+                type: 1,
+                area: ['300px', '400px'],
+                title: '个人信息',
+                content: $('#personal_info')
+            })
+        }
+
+        function OpenChangePwd() {
+            layer.open({
+                type: 1,
+                area: ['350px', '250px'],
+                title: '修改密码',
+                content: $('#personal_change_pwd')
+            })
+        }
+
+        function btnChangePwd_Click() {
+            var parms = {};
+            parms.oldPwd = $("#txtUserPwdOld").val();
+            parms.newPwd = $("#txtUserPwdNew").val();
+            parms.newPwdOk = $("#txtUserPwdNew2").val();
+            parms.isQR = $("#cbIsQR")[0].checked;
+            if (parms.oldPwd == parms.newPwd) {
+                layer.alert("旧密码不能和新密码一致！", 2);
+                return;
+            }
+            if (parms.newPwd != parms.newPwdOk) {
+                layer.alert("两次新密码不一致！", 2);
+
+                return;
+            }
+
+            $.post('../route/admin/SysUser/EditPassword', parms, function (data) {
+                if (data.type == 1) {
+                    layer.msg(data.message, { icon: 1 });
+                } else {
+                    layer.msg(data.message, { icon: 2 });
+                    return;
+                }
+            }, 'json');
+        }
+
+        //退出系统
+        function loginOut() {
+            layer.confirm('确定要退出当前用户?', { icon: 3, title: '提示' }, function (index) {
+                if (index) {
+                    $.get("/route/admin/Home/LoginOut", function (data) {
+
+                    }, "json");
+                    $.session.clear();
+
+                    window.location.href = "login.html";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+

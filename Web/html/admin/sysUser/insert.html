@@ -1,0 +1,159 @@
+﻿
+<div class="dialog">
+    <table class="tablem">
+        <tr>
+            <th>
+                <span>用户账号</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubUserId" class="easyui-validatebox form-control" data-options="required:true" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>姓名</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubUserName" class="easyui-validatebox form-control" data-options="required:true" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>邮箱</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubMail" class="form-control" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>手机/电话</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubTel" class="form-control" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>性别</span>
+            </th>
+            <td>
+                <!--<div class="radio radio-info">-->
+                <label>
+                    <input type="radio" id="rdSubSexMan" name="rdSubSex" checked /> 男
+                </label>
+                <label>
+                    <input type="radio" id="rdSubSexWan" name="rdSubSex" />女
+                </label>
+                <!--<label for="rdSubSexMan">
+                </label>
+                <label for="rdSubSexWan">
+                </label>-->
+                <!--</div>-->
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>职位/头衔</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubPost" class="form-control" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>是否启用</span>
+            </th>
+            <td>
+                <div class="checkbox checkbox-info">
+                    <input type="checkbox" id="cbIsAble" class="styled" checked />
+                    <label for="cbIsAble">
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>是否改密</span>
+            </th>
+            <td>
+                <div class="checkbox checkbox-info">
+                    <input type="checkbox" id="cbIsChangePwd" class="styled" />
+                    <label for="cbIsChangePwd">
+                    </label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>描述说明</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubDesc" class="form-control" />
+            </td>
+        </tr>
+    </table>
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-plus" plain="true" onclick="btnSubAdd_Click()">添加</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true" onclick="btnCancel_Click()">取消</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+    $(function () {
+        //部门初始化
+        //$("#txtSubDept").combotree({
+        //    url: '/route/admin/SysDept/GetListComboTree',
+        //    valueField: 'id',
+        //    textField: 'text',
+        //    method: 'POST',
+        //    editable: false,
+        //    onLoadSuccess: function (row, data) {
+        //        //$('#txtSubDept').combotree('expandAll');
+        //    },
+        //    onBeforeExpand: function () {
+
+        //    }
+
+        //});
+    })
+
+    function btnSubAdd_Click() {
+        var parms = {};
+        parms.userId = $("#txtSubUserId").val();
+        parms.userName = $("#txtSubUserName").val();
+        parms.e_mail = $("#txtSubMail").val();
+        parms.tel = $("#txtSubTel").val();
+        parms.sex = $("#rdSubSexMan")[0].checked ? true : $("#rdSubSexWan")[0].checked;
+        parms.post = $("#txtSubPost").val();
+        parms.isAble = $("#cbIsAble")[0].checked;
+        parms.isChangePwd = $("#cbIsChangePwd")[0].checked;
+        parms.desc = $("#txtSubDesc").val();
+
+        if (parms.userId == "") {
+            cMsg.alert_f("用户账号不能为空"); //用户账号不能为空
+            return;
+        }
+        if (parms.userName == "") {
+            cMsg.alert_f("用户名称不能为空"); //用户名称不能为空
+            return;
+        }
+
+        $.post('/route/admin/SysUser/Insert', parms, function (data) {
+            
+            if (data.type == 1) {
+                $("#tb_list").datagrid('reload');
+                cMsg.show(data.message);
+            } else {
+                cMsg.alert_f(data.message);
+            }
+        }, 'json');
+
+    }
+    function btnCancel_Click() {
+
+        $('#user_insert').dialog('close');
+    }
+
+    $(".footer").width($(".footer").width() - 12);
+</script>

@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>系统日志</title> 
+    <link href="../../../cij/css/main.css" rel="stylesheet" />
+    <!--EasyUI 1.5.2-->
+    <link href="/Content/easyui/themes/default/easyui.css" rel="stylesheet" id="easyuiTheme" />
+    <!-- Font Awesome 4.7.0 -->
+    <link href="/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+  
+
+</head>
+<body>
+    <div id="panel_query" class="easyui-panel" data-options="title: '查询区域', iconCls: 'fa fa-search' ">
+        <table class="queryTable">
+            <tr>
+                <th>操作人员(姓名)</th>
+                <td>
+                    <input type="text" id="txtUserName" class="form-control" />
+                </td>
+                <th>操作结果</th>
+                <td>
+                    <input type="text" id="txtLogResult" class="easyui-combobox" />
+                </td>
+                <th>记录类别</th>
+                <td>
+                    <input type="text" id="txtLogType" class="easyui-combobox" />
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <th>记录模块</th>
+                <td>
+                    <input type="text" id="txtLogModule" class="easyui-combobox" />
+                </td>
+                <th>操作日期</th>
+                <td colspan="3">
+                    <input type="text" id="txtSDate" class="easyui-datebox" />~
+                    <input type="text" id="txtEDate" class="easyui-datebox" />
+                </td>
+                <td>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-search" plain="true"
+                       onclick="btnQuery_Click()">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="panel_result" class="easyui-panel" data-options="title: '结果区域', iconCls: 'fa fa-database' ">
+        <table id="tb_list"></table>
+    </div>
+    <div id="toolbar">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-remove" plain="true" id="btnDelete"
+           onclick="btnDelete_Click()">删除</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-info-circle" plain="true" id="btnEdit"
+           onclick="btnDetail_Click()">详细</a>
+    </div>
+    <input type="hidden" id="hdSubLogId" />
+    <!-- jQuery 2.2.3 -->
+    <script src="/Content/jquery/jquery.min.js"></script>
+    <!--EasyUI 1.5.2-->
+    <script src="/Content/easyui/js/jquery.easyui.min.js"></script>
+    <script src="/Content/easyui/js/easyui-lang-zh_CN.js"></script>
+    <!--layer弹出层-->
+    <script src="../../../cij/js/msg.tool.js"></script>
+    <!--权限按钮-->
+    <script src="../../../cij/js/permission.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //操作结果
+            $("#txtLogResult").combobox({
+                url: '/route/admin/SysLog/GetLogType',
+                queryParams: { field: 'LOG_RESULT' },
+                valueField: 'id',
+                textField: 'text',
+                method: 'POST',
+                editable: false
+            });
+
+            //加载日志类别
+            $("#txtLogType").combobox({
+                url: '/route/admin/SysLog/GetLogType',
+                queryParams: { field: 'LOG_TYPE' },
+                valueField: 'id',
+                textField: 'text',
+                method: 'POST',
+                editable: false
+            });
+
+            //加载日志记录模块
+            $("#txtLogModule").combobox({
+                url: '/route/admin/SysLog/GetLogType',
+                queryParams: { field: 'LOG_MODULE' },
+                valueField: 'id',
+                textField: 'text',
+                method: 'POST',
+                editable: false
+            });
+
+
+            $("#tb_list").datagrid({
+                method: 'POST',
+                url: '/route/admin/SysLog/GetList',
+                height: ($(window).height() - 140),
+                //title: "test",
+                //iconCls: "icon-box_world",
+                striped: true,
+                rownumbers: true,
+                remotesort: true,
+                singleSelect: false,
+                pagination: true,
+                pageSize: 100,
+                sortName: 'CREATE_TIME',
+                sortOrder: 'desc',
+                pageList: [100, 200, 300, 400],
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'LOG_ID', title: '日志ID', width: 100, hidden: true },
+                    { field: 'OPERATE_ID', title: '操作人员', width: 100, align: 'left', sortable: true },
+                    { field: 'CREATE_TIME', title: '记录日期', width: 130, sortable: true },
+                    { field: 'LOG_MSG', title: '操作信息', width: 250, align: 'left' },
+                    { field: 'LOG_RESULT', title: '操作结果', width: 100, sortable: true },
+                    { field: 'LOG_TYPE', title: '记录类别', width: 100, align: 'left', sortable: true },
+                    { field: 'LOG_MODULE', title: '记录模块', width: 150, align: 'left', sortable: true },
+                    { field: 'LOG_DESC', title: '说明-备注', width: 260 },
+                    { field: 'LOG_NAMESPACE', title: '命名空间', width: 160, hidden: true },
+                    { field: 'LOG_CLASS', title: '类名', width: 100 },
+                    { field: 'LOG_METHOD', title: '方法', width: 100 },
+
+                ]],
+                toolbar: '#toolbar'
+
+            })
+        });
+
+        function btnQuery_Click() {
+            var parms = {};
+            parms.userName = $("#txtUserName").val();
+            parms.res = $("#txtLogResult").combobox('getValue');
+            parms.type = $("#txtLogType").combobox('getValue');
+            parms.module = $("#txtLogModule").combobox('getValue');
+            parms.sDate = $("#txtSDate").datebox("getValue");;
+            parms.eDate = $("#txtEDate").datebox("getValue");;
+
+            $("#tb_list").datagrid('reload', parms);
+        }
+
+        function btnDelete_Click() {
+            var rows = $("#tb_list").datagrid('getChecked');
+            if (rows.length == 0) {
+                cMsg.alert_f("请选择要删除的行");
+
+                return;
+            }
+            var tmpLogId = [];
+            for (var i = 0; i < rows.length; i++) {
+                tmpLogId.push(rows[i].LOG_ID);
+            }
+            var parms = {};
+            parms.logId = tmpLogId.join(',');
+            $.post("/route/admin/SysLog/Delete", parms, function (data) {
+                if (data.type == 1) {
+                    cMsg.show(data.message);
+
+                    $("#tb_list").datagrid('reload');
+                } else {
+                    cMsg.alert_f(data.message);
+
+                }
+            }, "json")
+        }
+
+        function btnDetail_Click() {
+            var rows = $("#tb_list").datagrid('getChecked');
+            if (rows.length == 0) {
+                cMsg.alert_f("请选择要查看的行");
+
+                return;
+            }
+            $("#hdSubLogId").val(rows[0].LOG_ID);
+            $("<div/>").dialog({
+                id: "log_detail",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "detail.html",
+                title: "日志明细",
+                height: 370,
+                width: 380,
+                modal: true,
+                iconCls: 'icon-bullet_green',
+                closable: true,
+                onLoad: function () {
+
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+
+
+
+        //窗口大小改变时，重新设定div大小
+        $(window).resize(function () {
+            $("#panel_query").panel({ width: $(window).width() - 5 });
+            $("#panel_result").panel({ width: $(window).width() - 5 });
+
+            $('#tb_list').datagrid('resize', {
+                width: $(window).width() - 7,
+                height: $(window).height() - 140
+            });
+        });
+    </script>
+</body>
+</html>

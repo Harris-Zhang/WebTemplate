@@ -1,0 +1,75 @@
+﻿
+
+<div class="dialog">
+    <input type="hidden" id="hf_pathId" />
+    <input type="hidden" id="hf_pathType" />
+
+    <table id="tb_menuPath"></table>
+    <div id="path_footer" class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-check" plain="true"
+           onclick="btnSubOK_Click()">选择</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true"
+           onclick="btnPathCancel_Click()">取消</a>
+        &nbsp;
+    </div>
+</div>
+
+<script>
+    
+
+    $(function () {
+
+        $("#tb_menuPath").treegrid({
+            method: 'POST',
+            url: '/route/admin/SysMenu/GetConPath',
+            width: 490,
+            height: 300,
+            //fitColumns: true,
+            //title: '文件路径选择',
+            //iconCls: 'icon-box_world',
+            treeField: 'PATH_NAME',
+            idField: 'PATH_ID',
+            //striped: true,
+            //rownumbers: true,
+            //singleSelect: true,
+            columns: [[
+                { field: 'PATH_ID', title: '文件路径代替名', width: 300, hidden: true },
+                { field: 'PATH_NAME', title: '文件名称', width: 150, align: 'left', },
+                { field: 'PATH_URL', title: '文件路径', width: 260, align: 'left', },
+                {
+                    field: 'PATH_TYPE', title: '类型', width: 50, align: 'left',
+                    formatter: function (value, row, index) {
+                        if (value == "File")
+                            return "文件";
+                        else
+                            return "文件夹";
+                    }
+                },
+            ]],
+            onClickRow: function (rowData) {
+                $("#hf_pathType").val(rowData.PATH_TYPE);
+                $("#hf_pathId").val(rowData.PATH_URL);
+            },
+
+        });
+    });
+
+    function btnSubOK_Click() {
+        var pathType = $("#hf_pathType").val();
+        var pathId = $("#hf_pathId").val(); 
+        if (pathType != "File") {
+            cMsg.alert_f("请选择文件，不要选择文件夹");
+            return;
+        }
+
+        $("#txtSubLinkAddress").val(pathId);
+        $('#con_path').dialog('close');
+    }
+
+
+    function btnPathCancel_Click() {
+        $('#con_path').dialog('close');
+    }
+
+    $("#path_footer").width($("#path_footer").width() - 12);
+</script>

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{97ECA487-E5F4-4387-9A46-0EA3A018F6B2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BZ.Repository</RootNamespace>
+    <AssemblyName>BZ.Repository</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="admin\AccountRep.cs" />
+    <Compile Include="admin\AppVersionRep.cs" />
+    <Compile Include="admin\HomeRep.cs" />
+    <Compile Include="admin\SysDeptRep.cs" />
+    <Compile Include="admin\SysExceptionRep.cs" />
+    <Compile Include="admin\SysLanguageRep.cs" />
+    <Compile Include="admin\SysLogLoginRep.cs" />
+    <Compile Include="admin\SysLogRep.cs" />
+    <Compile Include="admin\SysMenuOptRep.cs" />
+    <Compile Include="admin\SysMenuRep.cs" />
+    <Compile Include="admin\SysRightRep.cs" />
+    <Compile Include="admin\SysRoleRep.cs" />
+    <Compile Include="admin\SysUserRep.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="BaseRep.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BZ.Common\BZ.Common.csproj">
+      <Project>{14d586ad-35a8-46ca-aa7c-2c657da27e22}</Project>
+      <Name>BZ.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BZ.DbHelper\BZ.DbHelper.csproj">
+      <Project>{803af8ff-c81f-4864-ac6e-f24e1fb9878a}</Project>
+      <Name>BZ.DbHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BZ.Domain\BZ.Domain.csproj">
+      <Project>{9cc38161-59e8-40a1-b698-83e65b2b128e}</Project>
+      <Name>BZ.Domain</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

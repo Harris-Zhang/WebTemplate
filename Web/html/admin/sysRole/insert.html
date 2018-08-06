@@ -1,0 +1,61 @@
+﻿
+
+<div class="dialog">
+    <table class="tablem">
+        <tr>
+            <th>
+                <span >角色名称</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubRoleName" class="easyui-validatebox form-control" data-options="required:true" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span >描述</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubRoleDesc" class="form-control" />
+            </td>
+        </tr>
+
+    </table>
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-plus" plain="true"  
+           onclick="btnSubAdd_Click()">添加</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true"
+           onclick="btnCancel_Click()">取消</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+
+    function btnSubAdd_Click() {
+        var parms = {};
+        parms.roleName = $("#txtSubRoleName").val();
+        parms.desc = $("#txtSubRoleDesc").val();
+
+        if (parms.roleName == "") {
+            cMsg.alert_f("角色名称不能为空"); //角色名称不能为空
+            return;
+        }
+ 
+        $.post('/route/admin/SysRole/Insert', parms, function (data) {
+ 
+            
+            if (data.type == 1) {
+
+                $("#tb_list").datagrid('reload');
+                //$('#role_insert').dialog('close');
+                cMsg.show(data.message);
+            } else {
+                cMsg.alert_f(data.message);
+            }
+        }, 'json');
+
+    }
+    function btnCancel_Click() {
+        $('#role_insert').dialog('close');
+    }
+    $(".footer").width($(".footer").width() - 12);
+</script>

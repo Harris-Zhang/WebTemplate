@@ -1,0 +1,140 @@
+﻿/*
+ *Skin:Header is 深绿, Left Sidebar Menu is 深绿
+ *     
+*/
+
+//头部背景色
+$header-bc: #0c7768;
+//头部按钮控件 hover时 颜色
+$header-hover-bc: #065743;
+//头部文字显示颜色
+$header-a-c: #fff;
+//头部文字hover时 文字颜色
+$header-a-hover-c: #fff; 
+
+$logo-c: #fff;
+$logo-bc: #065743;
+$logo-hover-bc: #065743;
+
+//侧边栏背景色
+$sidebar-bc: #0b6858;
+//侧边栏文字默认颜色
+$sidebar-a-c: #b8c7ce;
+
+//侧边栏标题颜色
+$sidebar-header-c: #4b646f;
+//侧边栏标题背景色
+$sidebar-header-bc: #1a2226;
+
+$menu-header-hover-c: #ffffff;
+$menu-header-hover-bc: #0b8678;
+$menu-header-hover-border-left:#0ddac9;
+
+$menu-body-bc: #045648;
+$menu-body-a-c: #8aa4af;
+$menu-body-a-hover-c: #fff;
+
+$menu-body-li-before-color: #0ddac9;
+
+.skin-dgreen-dgreen {
+    .main-header {
+        .navbar {
+            background-color: $header-bc;
+
+            .nav {
+                & > li > a {
+                    color: $header-a-c;
+
+                    &:hover, &:active, &:focus {
+                        background: rgba(0, 0, 0, 0.1);
+                        background-color: $header-hover-bc;
+                        color: $header-a-hover-c;
+                    }
+                }
+
+                .open {
+                    & > a, & > a:hover, & > a:focus {
+                        background: rgba(0, 0, 0, 0.1);
+                        color: $header-a-hover-c;
+                    }
+                }
+            }
+
+            .menu-button {
+                color: $header-a-c;
+
+                &:hover {
+                    color: $header-a-hover-c;
+                    background: rgba(0, 0, 0, 0.1);
+                    background-color: $header-hover-bc;
+                }
+            }
+        }
+
+        .logo {
+            background-color: $logo-bc;
+            color: $logo-c;
+            border-bottom: 0 solid transparent;
+
+            &:hover {
+                background-color: $logo-hover-bc;
+            }
+        }
+
+        li.user-header {
+            background-color: $header-bc;
+        }
+    }
+
+    .wrapper, .main-sidebar {
+        background-color: $sidebar-bc;
+    }
+
+    .sidebar-menu > li {
+        &.header {
+            color: $sidebar-header-c;
+            background: $sidebar-header-bc;
+        }
+
+        & > a {
+            border-left: 3px solid transparent;
+        }
+
+        &:hover > a, &.active > a {
+            color: $menu-header-hover-c;
+            background: $menu-header-hover-bc;
+            border-left-color: $menu-header-hover-border-left;
+        }
+
+        & > .treeview-menu {
+            margin: 0 1px;
+            background: $menu-body-bc;
+
+            &:before {
+                border-color: $menu-body-li-before-color;
+            }
+
+            & > li {
+                &:before {
+                    border-color: $menu-body-li-before-color;
+                }
+
+                a {
+                    color: $menu-body-a-c;
+                }
+
+                &.active > a, & > a:hover {
+                    color: $menu-body-a-hover-c;
+                }
+            }
+        }
+    }
+
+    .sidebar a {
+        color: $sidebar-a-c;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}

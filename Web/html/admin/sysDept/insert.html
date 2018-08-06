@@ -1,0 +1,162 @@
+﻿
+
+<div class="dialog">
+    <div class="body">
+        <table class="tablem">
+            <tr>
+                <th>
+                    <span>父节点编码</span> 
+                </th>
+                <td>
+                    <input type="text" id="txtSubParentCode" class="form-control" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>部门编码</span>
+                </th>
+                <td>
+                    <input type="text" id="txtSubDeptCode" class="easyui-validatebox form-control" data-options="required:true" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>部门名称</span> 
+                </th>
+                <td>
+                    <input type="text" id="txtSubDeptName" class="easyui-validatebox form-control" data-options="required:true" />
+                </td>
+            </tr>
+            
+            <tr>
+                <th>
+                    <span>公司</span> 
+                </th>
+                <td>
+                    <input id="txtSubSite" class="easyui-combobox" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>排序号</span> 
+                </th>
+                <td>
+                    <input type="number" id="txtSubDeptSort" class="easyui-validatebox form-control" data-options="required:true" />
+                </td>
+            </tr>
+            <!--<tr>
+                <th>
+                    类别：
+                </th>
+                <td>
+                    <input type="text" id="txtSubDeptType" class="easyui-validatebox" data-options="required:true" />(LOCAL/ERP)
+                </td>
+            </tr>-->
+
+            <tr>
+                <th>
+                    <span>是否启用</span> 
+                </th>
+                <td>
+                    <div class="checkbox checkbox-info">
+                        <input type="checkbox" id="cbIsAble" class="styled" checked />
+                        <label for="cbIsAble">
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>是否最后一项</span> 
+                </th>
+                <td>
+                    <div class="checkbox checkbox-info">
+                        <input type="checkbox" id="cbIsEnd" class="styled" />
+                        <label for="cbIsEnd">
+                        </label>
+                    </div>
+ 
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>描述</span>
+                </th>
+                <td>
+                    <input type="text" id="txtSubDeptDesc" class="form-control" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-plus" plain="true" 
+           onclick="btnSubAdd_Click()">添加</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true"
+           onclick="btnCancel_Click()">取消</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+    $(function () {
+        ////公司初始化
+        //$("#txtSubCompanyId").combobox({
+        //    url: '/route/admin/SysDept/GetErpCompany',
+        //    valueField: 'COMPANY_ID',
+        //    textField: 'COMPANY_NAME',
+        //    method: 'POST',
+        //    editable: false,
+        //    onLoadSuccess: function () {
+        //        var data = $(this).combobox("getData");
+        //        if (data.length > 0) {
+        //            $(this).combobox('setValue', data[0].COMPANY_ID);
+        //        }
+        //    }
+        //});
+
+    });
+    function btnSubAdd_Click() { 
+        var parms = {};
+        parms.parent_code = $("#txtSubParentCode").val();
+        parms.dept_code = $("#txtSubDeptCode").val();
+        parms.name = $("#txtSubDeptName").val();
+        parms.site_code = $("#txtSubSite").combobox('getValue');
+        parms.site_name = $("#txtSubSite").combobox('getText');
+        parms.sort = $("#txtSubDeptSort").val(); 
+        parms.desc = $("#txtSubDeptDesc").val();
+        parms.is_able = $("#cbIsAble")[0].checked;
+        parms.is_end = $("#cbIsEnd")[0].checked;
+
+        
+        if (parms.name == "") {
+            cMsg.alert_f("名称不能为空"); //名称不能为空
+            $("#txtSubDeptName").focus()
+            return;
+        }
+        if (parms.code == "") {
+            cMsg.alert_f("编码不能为空"); //编码不能为空
+            $("#txtSubDeptCode").focus();
+            return;
+        } 
+        if (parms.sort == "") {
+            cMsg.alert_f("排序号不能为空"); //排序号不能为空
+            $("#txtSubMenuSort").focus();
+            return;
+        } 
+        $.post('/route/admin/SysDept/Insert', parms, function (data) {
+            if (data.type == 1) { 
+                $("#tb_dept").treegrid('reload');
+                cMsg.show(data.message);
+            } else {
+                cMsg.alert_f(data.message); 
+                return;
+            }
+        }, 'json');
+
+    }
+
+    function btnCancel_Click() {
+        $('#dept_insert').dialog('close');
+    }
+    $(".footer").width($(".footer").width() - 12);
+
+</script>

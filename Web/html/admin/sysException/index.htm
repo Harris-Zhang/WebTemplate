@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>系统异常</title> 
+    <link href="../../../cij/css/main.css" rel="stylesheet" />
+    <!--EasyUI 1.5.2-->
+    <link href="/Content/easyui/themes/default/easyui.css" rel="stylesheet" id="easyuiTheme" />
+    <!-- Font Awesome 4.7.0 -->
+    <link href="/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+     
+     
+</head>
+<body>
+    <div id="panel_query" class="easyui-panel" data-options="title: '查询区域', iconCls: 'fa fa-search' ">
+        <table class="queryTable">
+            <tr>
+                <th>操作人员(姓名)</th>
+                <td>
+                    <input type="text" id="txtUserName" class="form-control" />
+                </td>
+                <th>操作日期</th>
+                <td colspan="3">
+                    <input type="text" id="txtSDate" class="easyui-datebox form-control" />~
+                    <input type="text" id="txtEDate" class="easyui-datebox form-control" />
+                </td>
+                <td>
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-search" plain="true"
+                       onclick="btnQuery_Click()">查询</a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div id="panel_result" class="easyui-panel" data-options="title: '结果区域', iconCls: 'fa fa-database' ">
+        <table id="tb_list"></table>
+    </div>
+    <div id="toolbar">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-remove" plain="true" id="btnDelete"
+           onclick="btnDelete_Click()">删除</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-info-circle" plain="true" id="btnEdit"
+           onclick="btnDetail_Click()">详细</a>
+    </div>
+    <input type="hidden" id="hdSubExId" />
+    <!-- jQuery 2.2.3 -->
+    <script src="/Content/jquery/jquery.min.js"></script>
+    <!--EasyUI 1.5.2-->
+    <script src="/Content/easyui/js/jquery.easyui.min.js"></script>
+    <script src="/Content/easyui/js/easyui-lang-zh_CN.js"></script>
+    <!--layer弹出层-->
+    <script src="../../../cij/js/msg.tool.js"></script>
+    <!--权限按钮-->
+    <script src="../../../cij/js/permission.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $("#tb_list").datagrid({
+                method: 'POST',
+                url: '/route/admin/SysException/GetList',
+                height: ($(window).height() - 100),
+                //title: "test",
+                //iconCls: "icon-box_world",
+                striped: true,
+                rownumbers: true,
+                remotesort: true,
+                singleSelect: false,
+                pagination: true,
+                pageSize: 100,
+                sortName: 'CREATE_TIME',
+                sortOrder: 'desc',
+                pageList: [100, 200, 300, 400],
+                columns: [[
+                    { field: 'ck', checkbox: true },
+                    { field: 'EX_ID', title: '异常ID', width: 100, hidden: true },
+                    { field: 'EX_HELPLINK', title: '帮助连接', width: 70, align: 'left', hidden: true },
+                    { field: 'CREATE_TIME', title: '发生日期', width: 130, align: 'left', sortable: true },
+                    { field: 'CREATE_USER', title: '操作人员', width: 80, align: 'left', sortable: true },
+                    { field: 'EX_MESSAGE', title: '异常信息', width: 200 },
+                    { field: 'EX_SOURCE', title: '异常来源', width: 100, align: 'left' },
+                    { field: 'EX_STACK', title: '堆栈', width: 150, align: 'left' },
+                    { field: 'EX_TARGET', title: '目标页', width: 130 },
+                    { field: 'EX_DATA', title: '程序集', width: 150, align: 'left' },
+                    { field: 'EX_NAMESPACE', title: '命名空间', width: 200, align: 'left' },
+                    { field: 'EX_CLASS', title: '类名', width: 80, align: 'left' },
+                    { field: 'EX_METHOD', title: '方法', width: 80, align: 'left' },
+                    { field: 'EX_TYPE', title: '操作类型', width: 80, align: 'left' },
+                    { field: 'EX_DESC', title: '说明-备注', width: 150 }
+
+                ]],
+                toolbar: '#toolbar'
+
+            })
+        });
+
+        function btnQuery_Click() {
+            var parms = {};
+            parms.userName = $("#txtUserName").val();
+            parms.sDate = $("#txtSDate").datebox("getValue");;
+            parms.eDate = $("#txtEDate").datebox("getValue");;
+
+            $("#tb_list").datagrid('load', parms);
+        }
+
+        //删除
+        function btnDelete_Click() {
+            var rows = $("#tb_list").datagrid('getChecked');
+            if (rows.length == 0) {
+                cMsg.alert_f("请选择要删除的行");
+                return;
+            }
+            var tmpExId = [];
+            for (var i = 0; i < rows.length; i++) {
+                tmpExId.push(rows[i].EX_ID);
+            }
+            var parms = {};
+            parms.exId = tmpExId.join(',');
+            $.post("/route/admin/SysException/Delete", parms, function (data) {
+                if (data.type == 1) {
+                    cMsg.show(data.message);
+                    $("#tb_list").datagrid('load');
+                } else {
+                    cMsg.alert_f(data.message);
+                }
+            }, "json")
+        }
+
+        function btnDetail_Click() {
+            var rows = $("#tb_list").datagrid('getChecked');
+            if (rows.length == 0) {
+                cMsg.alert_f("请选择要查看的行");
+                return;
+            }
+            $("#hdSubExId").val(rows[0].EX_ID);
+            $("<div/>").dialog({
+                id: "exception_detail",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "detail.html",
+                title: "日志明细",
+                height: 540,
+                width: 400,
+                modal: true,
+                iconCls: 'icon-bullet_green',
+                closable: true,
+                onLoad: function () {
+
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+
+
+
+        //窗口大小改变时，重新设定div大小
+        $(window).resize(function () {
+            $("#panel_query").panel({ width: $(window).width() - 5 });
+            $("#panel_result").panel({ width: $(window).width() - 5 });
+
+            $('#tb_list').datagrid('resize', {
+                width: $(window).width() - 7,
+                height: $(window).height() - 100
+            });
+        });
+    </script>
+</body>
+</html>

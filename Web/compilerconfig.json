@@ -1,0 +1,10 @@
+﻿[
+  {
+    "outputFile": "Content/admin/css/admin.css",
+    "inputFile": "Content/admin/css/admin.scss"
+  },
+  {
+    "outputFile": "Content/admin/css/skins/all-skins.css",
+    "inputFile": "Content/admin/css/skins/all-skins.scss"
+  }
+]

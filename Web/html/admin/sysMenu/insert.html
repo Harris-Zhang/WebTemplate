@@ -1,0 +1,221 @@
+﻿
+
+<div class="dialog">
+        <table class="tablem">
+            <tr>
+                <th>
+                    <span >父节点ID</span>
+                </th>
+                <td>
+                    <input type="text" id="txtSubParentId" class="form-control" readonly="readonly" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>菜单名称</span>
+                </th>
+                <td>
+                    <input type="text" id="txtSubMenuName" class="easyui-validatebox form-control" data-options="required:true" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>菜单编码</span>
+                </th>
+                <td>
+                    <input type="text" id="txtSubMenuCode" class="easyui-validatebox form-control" data-options="required:true" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>链接地址</span>
+                </th>
+                <td>
+                    <input type="text" id="txtSubLinkAddress" class="easyui-validatebox form-control" style="float:left;" />
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-search" plain="true" style="float:left;"
+                       onclick="getConPath()"></a>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span lang="true" langkey="ui_menu_icon">图标</span>
+                </th>
+                <td>
+                    <input type="text" name="txtSubMenuIcon" id="txtSubMenuIcon" class="easyui-validatebox form-control"
+                           autocomplete="off" style="float:left;" />
+                    <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-search" plain="true" style="float:left;"
+                       onclick="getIconInfo()"></a>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>排序号</span>
+                </th>
+                <td>
+                    <input type="number" id="txtSubMenuSort" class="easyui-validatebox form-control" data-options="required:true" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>类别</span>
+                </th>
+                <td>
+                    <input type="text" id="txtSubMenuType" class="easyui-combobox" /><!--(PC/MP)-->
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>描述</span>
+                </th>
+                <td>
+                    <input type="text" id="txtSubMenuDesc" class="easyui-validatebox form-control" />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>是否启用</span>
+                </th>
+                <td>
+                    <div class="checkbox checkbox-info">
+                        <input type="checkbox" id="cbIsAble" class="styled" checked />
+                        <label for="cbIsAble">
+                        </label>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    <span>是否最后一项</span>
+                </th>
+                <td>
+                    <div class="checkbox checkbox-info">
+                        <input type="checkbox" id="cbIsEnd" class="styled" />
+                        <label for="cbIsEnd">
+                        </label>
+                    </div>
+                </td>
+            </tr>
+
+        </table>
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-plus" plain="true" onclick="btnSubAdd_Click()">添加</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true" onclick="btnCancel_Click()">取消</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+    $(function () {
+        //所属类别初始化
+        $("#txtSubMenuType").combobox({
+            valueField: 'label',
+            textField: 'value',
+            data: [{
+                label: 'PC',
+                value: 'PC端'
+            }, {
+                label: 'MP',
+                value: '手持终端'
+            }],
+            onLoadSuccess: function () {
+                var data = $(this).combobox("getData");
+                if (data.length > 0) {
+                    $(this).combobox('setValue', data[0].label);
+                }
+            }
+        });
+    })
+    function btnSubAdd_Click() {
+        var parms = {};
+        parms.parentId = $("#txtSubParentId").val();
+        parms.menuName = $("#txtSubMenuName").val();
+        parms.code = $("#txtSubMenuCode").val();
+        parms.link = $("#txtSubLinkAddress").val();
+        parms.icon = $("#txtSubMenuIcon").val();
+        parms.sort = $("#txtSubMenuSort").val();
+        parms.type = $("#txtSubMenuType").combobox('getValue'); //$("#txtSubMenuType").val();
+        parms.desc = $("#txtSubMenuDesc").val();
+        parms.isable = $("#cbIsAble")[0].checked;
+        parms.isend = $("#cbIsEnd")[0].checked;
+
+
+        if (parms.menuName == "") {
+            cMsg.alert_f("菜单名称不能为空"); //菜单名称不能为空
+            $("#txtSubMenuName").focus()
+            return;
+        }
+        if (parms.code == "") {
+            cMsg.alert_f("编码名称不能为空"); //编码名称不能为空
+            $("#txtSubMenuCode").focus();
+            return;
+        }
+        if (parms.isend == true && parms.link == "") {
+            cMsg.alert_f("链接地址不能为空"); //链接地址不能为空
+            $("#txtSubLinkAddress").focus();
+            return;
+        }
+        if (parms.icon == "") {
+            cMsg.alert_f("图标不能为空"); //图标不能为空
+            $("#txtSubMenuIcon").focus()
+            return;
+        }
+        if (parms.sort == "") {
+            cMsg.alert_f("排序号不能为空"); //排序号不能为空
+            $("#txtSubMenuSort").focus();
+            return;
+        }
+        if (parms.type == "") {
+            cMsg.alert_f("类别不能为空"); //类别不能为空
+            $("#txtSubMenuType").focus();
+            return;
+        }
+
+        $.post('/route/admin/SysMenu/Insert', parms, function (data) {  
+            if (data.type == 1) {
+                $("#tb_list").treegrid('reload');
+                $('#menu_edit').dialog('close');
+                cMsg.show(data.message);
+            } else {
+                cMsg.alert_f(data.message);
+            }
+        }, 'json');
+
+    }
+
+    function getIconInfo() {
+        $("<div/>").dialog({
+            id: "menu_icon",
+            href: "icon.html",
+            title: "选择图标",
+            height: 350,
+            width: 450,
+            modal: true,
+            onLoad: function () {
+
+            },
+            onClose: function () {
+                $(this).dialog("destroy");
+            }
+        });
+    }
+
+    function getConPath() {
+        $("<div/>").dialog({
+            id: "con_path",
+            href: "con_path.html",
+            title: "选择路径",
+            height: 367,
+            width: 503,
+            modal: true,
+            onLoad: function () {
+            },
+            onClose: function () {
+                $(this).dialog("destroy");
+            }
+        });
+    }
+
+    function btnCancel_Click() {
+        $('#menu_insert').dialog('close');
+    }
+    $(".footer").width($(".footer").width() - 12);
+</script>

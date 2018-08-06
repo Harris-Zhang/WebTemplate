@@ -1,0 +1,67 @@
+﻿
+<div class="dialog">
+    <table class="tablem">
+        <tr>
+            <th>
+                <span>角色ID</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubRoleId" class="form-control" disabled="disabled" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>角色名称</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubRoleName" class="easyui-validatebox form-control" data-options="required:true" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <span>描述</span>
+            </th>
+            <td>
+                <input type="text" id="txtSubRoleDesc" class="form-control" />
+            </td>
+        </tr>
+    </table>
+    <div class="dialog-button footer">
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-edit" plain="true"
+           onclick="btnSubEdit_Click()">修改</a>
+        <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-reply" plain="true"
+           onclick="btnCancel_Click()">取消</a>
+        &nbsp;
+    </div>
+</div>
+<script>
+
+    function btnSubEdit_Click() {
+        var parms = {};
+        parms.roleId = $("#txtSubRoleId").val();
+        parms.roleName = $("#txtSubRoleName").val();
+        parms.desc = $("#txtSubRoleDesc").val();
+
+        if (parms.roleName == "") {
+            cMsg.alert_f("角色名称不能为空"); //角色名称不能为空
+            return;
+        }
+
+        $.post('/route/admin/SysRole/Edit', parms, function (data) {
+            
+            if (data.type == 1) {
+
+                $("#tb_list").datagrid('reload');
+                $('#role_edit').dialog('close');
+                cMsg.show(data.message);
+            } else {
+                cMsg.alert_f(data.message);
+            }
+        }, 'json');
+
+    }
+    function btnCancel_Click() {
+        $('#role_edit').dialog('close');
+    }
+    $(".footer").width($(".footer").width() - 12);
+</script>

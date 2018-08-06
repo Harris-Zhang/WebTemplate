@@ -1,0 +1,316 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>菜单设定</title>
+    <link href="../../../cij/css/main.css" rel="stylesheet" />
+    <!--EasyUI 1.5.2-->
+    <link href="/Content/easyui/themes/default/easyui.css" rel="stylesheet" id="easyuiTheme" />
+    <!-- Font Awesome 4.7.0 -->
+    <link href="/Content/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+
+</head>
+<body>
+    <div style="float:left;">
+        <table id="tb_list"></table>
+        <div id="toolbar">
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-plus" plain="true" id="btnInsert"
+               onclick="btnInsert_Click()">新增</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-remove" plain="true" id="btnDelete"
+               onclick="btnDelete_Click()">删除</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-edit" plain="true" id="btnEdit"
+               onclick="btnEdit_Click()">修改</a>
+        </div>
+    </div>
+    <div style="float:left;">
+        <table id="tb_OpList"></table>
+        <div id="toolbarOpt">
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-plus" plain="true" id="btnOptInsert"
+               onclick="btnInsertOpt_Click()">新增</a>
+            <a href="javascript:void(0);" class="easyui-linkbutton" iconcls="fa fa-remove" plain="true" id="btnOptDelete"
+               onclick="btnDeleteOpt_Click()">删除</a>
+        </div>
+    </div>
+    <!-- jQuery 2.2.3 -->
+    <script src="/Content/jquery/jquery.min.js"></script>
+    <!--EasyUI 1.5.2-->
+    <script src="/Content/easyui/js/jquery.easyui.min.js"></script>
+    <script src="/Content/easyui/js/easyui-lang-zh_CN.js"></script>
+    <!--layer弹出层-->
+    <script src="../../../cij/js/msg.tool.js"></script>
+    <!--权限按钮-->
+    <script src="../../../cij/js/permission.js"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $("#tb_list").treegrid({
+                method: 'POST',
+                url: '/route/admin/SysMenu/GetList',
+                width: $(window).width() - 400,
+                height: ($(window).height() - 20),
+                //fitColumns: true,
+                title: '菜单维护',
+                iconCls: 'fa fa-navicon',
+                treeField: 'MENU_NAME',
+                idField: 'MENU_ID',
+                //striped: true,
+                //rownumbers: true,
+                //singleSelect: true,
+                columns: [[
+                    { field: 'MENU_ID', title: '唯一标示符', width: 100, hidden: true },
+                    { field: 'MENU_NAME', title: '菜单名称', width: 150, align: 'left' },
+                    { field: 'PARENT_ID', title: '父节点', width: 100, align: 'left', hidden: true },
+                    { field: 'MENU_CODE', title: '菜单编码', width: 100, },
+                    { field: 'MENU_PATH', title: '链接地址', width: 230, },
+                    {
+                        field: 'MENU_ICON', title: '图标名称', width: 120,
+                        //formatter: function (value) {
+                        //    return "<div class='" + value + "' style='padding-left: 20px;'>" + value + "</div>";
+                        //}
+                    },
+                    { field: 'MENU_SORT', title: '排序', width: 40, },
+                    { field: 'MENU_TYPE', title: '类别', width: 40, },
+                    {
+                        field: 'IS_ABLED', title: '是否启用', width: 60, align: 'center',
+                        formatter: function (value) {
+                            return value ? '<i class="fa fa-check-square-o" aria-hidden="true"></i>' : '<i class="fa fa-square-o" aria-hidden="true" ></i>';
+                        }
+                    },
+                    { field: 'CREATE_TIME', title: '创建时间', width: 130, },
+                    { field: 'CREATE_USER', title: '创建人员', width: 70, },
+                    {
+                        field: 'IS_END', title: '是否最后一项', width: 70, align: 'center',
+                        formatter: function (value) {
+                            return value ? '<i class="fa fa-check-square-o" aria-hidden="true"></i>' : '<i class="fa fa-square-o" aria-hidden="true" ></i>';
+                        }
+                    }
+
+                ]],
+                onClickRow: function (rowData) {
+                    var parms = {};
+                    parms.menuId = rowData.MENU_ID;
+                    if (rowData.IS_END) {
+                        $('#tb_OpList').datagrid('reload', parms);
+                    } else {
+                        $('#tb_OpList').datagrid('loadData', { total: 0, rows: [] });
+                    }
+                },
+                //onLoadSuccess: function (row, data) { //加载完后 展开所有列表
+                //    $('#tb_list').treegrid('expandAll');
+
+                //},
+                onBeforeExpand: function (row) {
+                    if (row.MENU_ID == 0) {//去除顶级菜单，防止报错
+                        return false;
+                    }
+                },
+                toolbar: '#toolbar'
+
+            })
+
+            $("#tb_OpList").datagrid({
+                method: 'POST',
+                url: '/route/admin/SysMenu/GetOpListByMenuId',
+                height: ($(window).height() - 20),
+                width: 370,
+                title: '操作码维护',
+                iconCls: 'fa fa-opera',
+                //height: $("#div_content").height(),
+                //border: true, //当true时，显示该datagrid面板的边框。
+                //striped: true,//当true时，单元格显示条纹。默认false。
+                //fit: true,//当true时，设置大小以适应它的父容器。默认false。
+                rownumbers: true,//当true时显示行号。默认false。
+                singleSelect: true,//当true时只允许当前选择一行。默认false。
+                pagination: false,//当true时在DataGrid底部显示一个分页工具栏。默认false。
+                columns: [[
+                    //{ field: 'ck', checkbox: true },
+                    { field: 'MO_CODE', title: '代码', width: 70, align: 'left' },
+                    { field: 'MO_NAME', title: '名称', width: 70, align: 'left', },
+                    {
+                        field: 'IS_ABLED', title: '是否验证', width: 60, align: 'center',
+                        formatter: function (value) {
+                            return value ? '<i class="fa fa-check-square-o" aria-hidden="true"></i>' : '<i class="fa fa-square-o" aria-hidden="true" ></i>';
+                        }
+                    },
+                    { field: 'MO_DESC', title: '说明', width: 100, align: 'left' },
+                ]],
+                toolbar: '#toolbarOpt'
+            });
+
+        });
+
+        function btnInsert_Click() {
+            var row = $('#tb_list').treegrid('getSelected');
+            if (row == null) {
+                cMsg.alert_f("请选择要添加的父节点"); //请选择要添加的父节点
+                return;
+            }
+            if (row.ISEND == true) {
+                cMsg.alert_f("这个节点是最后一项，不允许添加子节点"); //这个节点是最后一项，不允许添加子节点
+                return;
+            }
+            $("<div/>").dialog({
+                id: "menu_insert",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "insert.html",
+                title: "添加菜单",
+                height: 480,
+                width: 380,
+                modal: true,
+                iconCls: 'fa fa-plus',
+                closable: true,
+                onLoad: function () {
+
+                    $("#txtSubParentId").val(row.MENU_ID);    //聚焦密码框
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+
+        function btnDelete_Click() {
+            var rows = $('#tb_list').treegrid('getSelected');
+            if (rows == null) {
+                cMsg.alert_f("请选择要删除的行"); //请选择要删除的行
+                return;
+            }
+
+            var parms = {};
+            parms.menuId = rows.MENU_ID;                             //您确定要删除该菜单
+            cMsg.confirm("您确定要删除该菜单？", function (r) {
+                if (r) {
+                    $.post("/route/admin/SysMenu/Delete", parms, function (data) {
+
+                        if (data.type == 1) {
+                            $("#tb_list").treegrid('reload');
+                            cMsg.show(data.message);
+                        } else {
+                            cMsg.alert_f(data.message);
+                        }
+                    }, "json")
+                }
+            })
+
+
+        }
+
+        function btnEdit_Click() {
+            var rows = $("#tb_list").treegrid('getSelected');
+            if (rows == null) {
+                cMsg.alert_f("请选择要修改的行"); //请选择要修改的行
+                return;
+            }
+
+            $("<div/>").dialog({
+                id: "menu_edit",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "edit.html",
+                title: "修改菜单",
+                height: 530,
+                width: 380,
+                modal: true,
+                iconCls: 'fa fa-edit',
+                closable: true,
+                onLoad: function () {
+
+                    $("#txtSubMenuId").val(rows.MENU_ID);
+                    $('#txtSubParentId').combotree('setValue', rows.PARENT_ID);
+                    $("#txtSubMenuName").val(rows.MENU_NAME);
+                    $("#txtSubMenuCode").val(rows.MENU_CODE);
+                    $("#txtSubLinkAddress").val(rows.MENU_PATH);
+                    $("#txtSubMenuIcon").val(rows.MENU_ICON);
+                    $("#txtSubMenuSort").val(rows.MENU_SORT);
+                    $("#txtSubMenuType").val(rows.MENU_TYPE);
+                    $("#txtSubMenuDesc").val(rows.MENU_DESC);
+                    if (rows.IS_ABLED)
+                        $("#cbIsAble").attr("checked", "true");
+                    else
+                        $("#cbIsAble").removeAttr("checked");
+                    if (rows.IS_END)
+                        $("#cbIsEnd").attr("checked", "true");
+                    else
+                        $("#cbIsEnd").removeAttr("checked");
+
+                    $("#txtSubMenuName").focus();    //聚焦密码框
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+
+        function btnInsertOpt_Click() {
+            var row = $('#tb_list').treegrid('getSelected');
+            if (row == null) {
+                cMsg.alert_f("请选择要添加的菜单"); //请选择要添加的菜单
+                return;
+            }
+            if (!row.IS_END) {
+                cMsg.alert_f("该菜单不是最后一项，无法添加操作码"); //该菜单不是最后一项，无法添加操作码
+                return;
+            }
+            $("<div/>").dialog({
+                id: "menu_opt_insert",   //给dialog一个id，操作完好销毁，否则一直在html里
+                href: "opt_insert.html",
+                title: "添加操作码",
+                height: 330,
+                width: 380,
+                modal: true,
+                iconCls: 'fa fa-plus',
+                closable: true,
+                onLoad: function () {
+
+                    $("#txtSubMenuId").val(row.MENU_ID);
+                    $("#txtSubMenuName").val(row.MENU_NAME);
+                },
+                onClose: function () {
+                    $(this).dialog('destroy');
+                }
+            });
+        }
+
+        function btnDeleteOpt_Click() {
+            var rows_menu = $("#tb_list").treegrid('getSelected');
+            if (rows_menu == null) {
+                cMsg.alert_f("请先选择菜单"); //请选择要修改的行
+                return;
+            }
+
+            var row = $('#tb_OpList').datagrid('getSelected');
+            if (row == null) {
+                cMsg.alert_f("请选择要删除的行"); //请选择要删除的行
+                return;
+            }
+
+            var parms = {};
+            parms.mo_code = row.MO_CODE;
+            parms.menu_id = rows_menu.MENU_ID;//您确定要删除该操作码?
+            cMsg.confirm("您确定要删除该操作码？", function (r) {
+                if (r) {
+                    $.post("/route/admin/SysMenu/DeleteOpt", parms, function (data) {
+                        if (data.type == 1) {
+                            $("#tb_OpList").datagrid('reload');
+                            cMsg.show(data.message);
+                        } else {
+                            cMsg.alert_f(data.message);
+                        }
+                    }, "json");
+
+                }
+            })
+        }
+
+        //窗口大小改变时，重新设定div大小
+        $(window).resize(function () {
+
+            $('#tb_list').datagrid('resize', {
+                width: $(window).width() - 400,
+                height: $(window).height() - 20
+            });
+            $('#tb_OpList').datagrid('resize', {
+                width: 370,
+                height: $(window).height() - 20
+            });
+        });
+    </script>
+</body>
+</html>
